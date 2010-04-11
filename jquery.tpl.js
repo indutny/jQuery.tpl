@@ -1,4 +1,4 @@
-/**@license jQuery Tpl plugin v.0.3.2
+/**@license jQuery Tpl plugin v.0.3.3
  ** Copyright 2010, Fedor Indutny 
  **/
  
@@ -12,14 +12,21 @@
 			$tabs = /\t/gm,
 			$spaces = /\s+/gm,
 			// functions
-			$push = function (a) {
-				
+			$push = function (a) {				
 				this.$_[this.$_.length] =
 					(a instanceof $) ?
 						$insert_jQuery(a, this.$scope.$replace) :
 						a;	
 			},
 			$deploy = function (){return this.$_.join("");},
+			$catch = function ( callback ){
+				var old = this.$_;
+				this.$_=[];
+				callback();
+				callback = this.$_.join('');
+				this.$_= old;
+				return callback;
+			},
 			// modificators
 			modificators = {
 			
@@ -51,12 +58,12 @@
 					return "});";
 				},
 				// Catch
-				// Example: {%catch%}<div></div>{%/catch var a%}{%= a%}
-				"catch" : function () {
-					return "$scope.$__=$_;$_=[];";
+				// Example: {%catch var a%}<div></div>{%/catch%}{%= a%}
+				"catch" : function (str) {
+					return str+"=$catch(function(){";
 				},
-				"/catch" : function (str) {
-					return str+"=$d();$_=$scope.$__;$scope.$__=void(0);";
+				"/catch" : function () {
+					return "});";
 				}
 			};
 			
@@ -164,9 +171,10 @@
 			$.extend(
 				(args = args || {}),
 				{
-					$_	:	[],
-					$p	:	$push,
-					$d	:	$deploy
+					$_			:	[],
+					$p			:	$push,
+					$d			:	$deploy,
+					$catch	:	$catch
 				}
 			);
 						
