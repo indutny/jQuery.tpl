@@ -1,32 +1,92 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
+	<style type="text/css">
+		input.placeholder-input-blank {
+			color: #ccc;
+		}
+		.my-form {
+			margin-left: auto;
+			margin-right: auto;
+			width: 300px;
+			text-align: center;
+		}
+		.my-form-label {
+			float: left;
+			clear: left;
+			font-size: 20px;
+		}
+		.placeholder-input {
+			float: right;
+			clear: right;
+			border:1px solid #333;
+			height: 20px;
+			margin: 2px;
+		}
+		.my-form-submit {
+			width: 100%;
+		}
+	</style>
+	
 	<script type="text/javascript" src="jquery.js"></script>
 	<script type="text/javascript" src="jquery.tpl.js"></script>
 	
 	<script type="text/html" class="a class name id defval" id="placeholder-input">
+	{%
+		class.normal = class.normal || "";
+		class.def = class.def || "";
+		class.blank = class.blank || "";
+		name = name || "";
+		defval = defval || "";
+	%}
 	{%catch a%}
-		<input type="text" name="{%= name %}" {%= id?'id='+id:'' %}class="{%= class.def + " " + class.blank %}" value="{%= defval %}"/>
+		<input type="text" name="{%= name %}" {%= id?'id='+id:'' %} class="{%= class.def + " " + class.blank %}" value="{%= defval %}"/>
 	{%/catch%}
 	{%= (a=$(a)).focus(function() {
 		if (a.val() == defval)
 			a.removeClass(class.blank).addClass(class.normal).val('');
-	}).blur(function () {
+	}).blur(function () {		
 		if (a.val() == '')
 			a.removeClass(class.normal).addClass(class.blank).val(defval);
 	}) %}
 	</script>
-	
+	<script type="text/html" class="i inputs def" id="my-form">
+	<div class="my-form">
+		<form>
+		<h4>Simple example (of jQuery.tpl):</h4>
+		{%each inputs %}
+			<label class="my-form-label">{%= this.title %}:</label>
+			{%: placeholder-input $.extend(
+					true,
+					$.extend(
+						{},
+						def
+					),
+				this) %}
+			<div style="clear:both"></div>
+		{%/each %}
+		<input type="submit" value="Submit form" class="my-form-submit"/>
+		</form>
+		<br/>
+		<small><i>coded by <a href="http://blog.habrastat.ru/">Fedor Indutny</a>, 2010</i></small>
+	</div>
+	</script>
 	<script type="text/javascript">
 		$(function () {
-			$("#placeholder-input").render("name" , {
-				class:{
-					def: "placeholder-input",
-					blank: "placeholder-input-blank",
-					normal: "placeholder-input-normal"
+			$("#placeholder-input").render("placeholder-input");
+			$('#my-form').render({
+				def: {
+					class: {
+						blank: "placeholder-input-blank",
+						def: "placeholder-input"
+					}
 				},
-				name: "name",
-				defval: "type here"
+				inputs: [
+					{ title: "First name", name: "firstname",  defval: "Adam"},
+					{ title: "Second name", name: "secondname",  defval: "Rogers"},
+					{ title: "Country", name: "firstname",  defval: "USA"},
+					{ title: "Job", name: "secondname",  defval: "Coder"}
+				]
 			}).appendTo('body');
 		});
 	</script>
