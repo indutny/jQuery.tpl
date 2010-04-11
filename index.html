@@ -28,11 +28,13 @@
 		}
 	</style>
 	
-	<script type="text/javascript" src="jquery.js"></script>
-	<script type="text/javascript" src="jquery.tpl.js"></script>
+	<script type="text/javascript" src="jquery.dev.js"></script>
+	<script type="text/javascript" src="jquery.tpl.min.js"></script>
 	
-	<script type="text/html" class="a class name id defval" id="placeholder-input">
+	<script type="text/html" class="class name id defval" id="placeholder-input">
 	{%
+		var a;
+		console.log(a);
 		class.normal = class.normal || "";
 		class.def = class.def || "";
 		class.blank = class.blank || "";
@@ -54,6 +56,7 @@
 	<div class="my-form">
 		<form>
 		<h4>Simple example (of jQuery.tpl):</h4>
+		
 		{%each inputs %}
 			<label class="my-form-label">{%= this.title %}:</label>
 			{%: placeholder-input $.extend(
@@ -76,6 +79,7 @@
 			$("#placeholder-input").render("placeholder-input");
 			$('#my-form').render({
 				def: {
+					a: undefined,
 					class: {
 						blank: "placeholder-input-blank",
 						def: "placeholder-input"
@@ -84,8 +88,8 @@
 				inputs: [
 					{ title: "First name", name: "firstname",  defval: "Adam"},
 					{ title: "Second name", name: "secondname",  defval: "Rogers"},
-					{ title: "Country", name: "firstname",  defval: "USA"},
-					{ title: "Job", name: "secondname",  defval: "Coder"}
+					{ title: "Country", name: "country",  defval: "USA"},
+					{ title: "Job", name: "job",  defval: "Coder"}
 				]
 			}).appendTo('body');
 		});
@@ -93,5 +97,42 @@
 	<title>jQuery.tpl plugin's demo site</title>	
 </head>
 <body >
+<script type='text/javascript'> 
+var _gaq = _gaq || [];
+_gaq.push(
+    ['_setAccount', 'UA-15690174-1'],
+    ['_setDomainName', 'dev.habrastat.ru'],
+    ["_addOrganic", "mail.ru", "q"],
+    ["_addOrganic","rambler.ru", "words"],
+    ["_addOrganic","nigma.ru", "s"],
+    ["_addOrganic","blogs.yandex.ru", "text"],
+    ["_addOrganic","webalta.ru", "q"],
+    ["_addOrganic","aport.ru", "r"],
+    ["_addOrganic","akavita.by", "z"],
+    ["_addOrganic","meta.ua", "q"],
+    ["_addOrganic","bigmir.net", "q"],
+    ["_addOrganic","tut.by", "query"],
+    ["_addOrganic","all.by", "query"],
+    ["_addOrganic","i.ua", "q"],
+    ["_addOrganic","online.ua", "q"],
+    ["_addOrganic","a.ua", "s"],
+    ["_addOrganic","ukr.net", "search_query"],
+    ["_addOrganic","search.com.ua", "q"],
+    ["_addOrganic","search.ua", "query"],
+    ["_addOrganic","poisk.ru", "text"],
+    ["_addOrganic","km.ru", "sq"],
+    ["_addOrganic","liveinternet.ru", "ask"],
+    ["_addOrganic","gogo.ru", "q"],
+    ["_addOrganic","gde.ru", "keywords"],
+    ["_addOrganic","quintura.ru", "request"],
+    ['_trackPageview']
+);
+ 
+(function() {
+ var ga = document.createElement('script');
+ ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+ ga.setAttribute('async', 'true');
+ document.documentElement.firstChild.appendChild(ga);
+})();</script> 	
 </body>
 </html>
