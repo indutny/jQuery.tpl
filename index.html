@@ -42,13 +42,13 @@
 			$('#B').click(function () {
 				try {
 					$('#sandbox').html(					
-						$.tpl(
+						$.template(
 							$('#A').val(),
 							{}
-						).replace()
+						).render()
 					);
 				} catch( e ) {
-					$('#sandbox').html("Wrong template!");
+					$('#sandbox').html("Wrong template!<br/>" + e) ;
 				}
 			});
 			

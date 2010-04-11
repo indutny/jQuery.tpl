@@ -1,8 +1,8 @@
-/**@license jQuery Tpl plugin v.0.3.3
+/**@license jQuery Tpl plugin v.0.3.4
  ** Copyright 2010, Fedor Indutny 
  **/
  
- (function ($) {
+ (function ($,undefined) {
 	// cache
 	var	cache = {},
 			namecache ={},
@@ -78,7 +78,16 @@
 	
 	// Render template, getting it from object
 	// If name is defined - store into namecache
+	// Also you can use this syntax:
+	// $('...').render({arguments});
+	// $('...').render("name");
 	$.fn.render = function (name, args) {
+		// We can call template without name
+		(!args) &&
+			(!name instanceof String) &&
+				(args = name) &&
+					(name = undefined);
+				
 		var fn = $.template(
 			// Code of element = template
 			this.html(),
