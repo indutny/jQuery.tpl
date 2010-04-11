@@ -1,4 +1,4 @@
-/**@license jQuery Tpl plugin v.0.3.4
+/**@license jQuery Tpl plugin v.0.3.5
  ** Copyright 2010, Fedor Indutny 
  **/
  
@@ -84,7 +84,7 @@
 	$.fn.render = function (name, args) {
 		// We can call template without name
 		(!args) &&
-			(!name instanceof String) &&
+			(!(name instanceof String)) &&
 				(args = name) &&
 					(name = undefined);
 				

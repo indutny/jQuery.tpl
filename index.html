@@ -4,61 +4,34 @@
 	<script type="text/javascript" src="jquery.js"></script>
 	<script type="text/javascript" src="jquery.tpl.min.js"></script>
 	
-	<script type="text/html" class="value" id="tpl-button">
-	{%= $('<button>'+(value||"text")+'</button>').click(function() {
-	alert(value||"Alert!");
+	<script type="text/html" class="a class name id defval" id="placeholder-input">
+	{%catch a%}
+		<input type="text" name="{%= name %}" {%= id?'id='+id:'' %}class="{%= class.def + " " + class.blank %}" value="{%= defval %}"/>
+	{%/catch%}
+	{%= (a=$(a)).focus(function() {
+		if (a.val() == defval)
+			a.removeClass(class.blank).addClass(class.normal).val('');
+	}).blur(function () {
+		if (a.val() == '')
+			a.removeClass(class.normal).addClass(class.blank).val(defval);
 	}) %}
 	</script>
 	
-	<script type="text/html" id="tpl-form"> 
-	<div>
-	Hello!
-	{%: button {value:123}%}{%: button {}%}
-	</div>
-	</script> 
-	
-	<title>jQuery.tpl plugin</title>	
-</head>
-<body >
-	<h4>Type template here:</h4>
-	<textarea  style="width: 95%;height:170px;font-size:11px" id="A"><div>
-{% for (i=0;i<10;i++) { %}
-{%=
-	(function (i){
-		return $("<div>"+i+"</div>")
-					.click(function () {
-						alert(10-i);
-					});
-	})(i)
-%}
-{% } %}</div></textarea>
-	<button style="width:96%;" id="B">And run it</button>
-	<div id="sandbox" style="border:2px solid #333;min-height:100px;width: 95%">
-	</div>
-	<h4>My examples</h4>
 	<script type="text/javascript">
 		$(function () {
-			
-			$('#B').click(function () {
-				try {
-					$('#sandbox').html(					
-						$.template(
-							$('#A').val(),
-							{}
-						).render()
-					);
-				} catch( e ) {
-					$('#sandbox').html("Wrong template!<br/>" + e) ;
-				}
-			});
-			
+			$("#placeholder-input").render("name" , {
+				class:{
+					def: "placeholder-input",
+					blank: "placeholder-input-blank",
+					normal: "placeholder-input-normal"
+				},
+				name: "name",
+				defval: "type here"
+			}).appendTo('body');
 		});
-	
-		$('#tpl-button').render("button");
-		$('#tpl-form').render("form",{}).appendTo('body');
-		$('#tpl-form').render("form",{}).appendTo('body');
-		$('#tpl-form').render("form",{}).appendTo('body');
 	</script>
-	
+	<title>jQuery.tpl plugin's demo site</title>	
+</head>
+<body >
 </body>
 </html>
