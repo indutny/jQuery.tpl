@@ -1,4 +1,4 @@
-/**@license jQuery Tpl plugin v.0.3.8
+/**@license jQuery Tpl plugin v.0.3.9
  ** Copyright 2010, Fedor Indutny 
  **/
  
@@ -130,7 +130,7 @@
 			$.map(
 				args || [] ,
 				function(elem) {
-					return elem?elem:null
+					return elem || null
 				}
 			)
 		);
