@@ -1,4 +1,4 @@
-/**@license jQuery Tpl plugin v.0.3.7
+/**@license jQuery Tpl plugin v.0.3.8
  ** Copyright 2010, Fedor Indutny 
  **/
  
@@ -11,12 +11,13 @@
 			$modificator = /^([^\s]+)(?:\s|$)/,
 			$tabs = /\t/gm,
 			$spaces = /\s+/gm,
+			length = "length",
 			// functions
-			$push = function (a) {				
-				this.$_[this.$_.length] =
+			$push = function (a) {								
+				this.$_[this.$_[length]] =
 					(a instanceof $) ?
-						$insert_jQuery(a, this.$scope.$replace) :
-						a;	
+						$insert_jQuery(a, this.$scope.$r) :
+						a;					
 			},
 			$deploy = function (){return this.$_.join("");},
 			$catch = function ( callback ){
@@ -47,7 +48,7 @@
 				// Example: {%:templatename {arg1:val1,arg2:val2} %}
 				":" : function (str) {
 					var name = str.match($modificator);
-					return "$p($.template('"+name[1]+"').render(" + str.substr(name[0].length) + "));";
+					return "$p($.template('"+name[1]+"').render(" + str.substr(name[0][length]) + "));";
 				},
 				// Short-hand for each method
 				// Example: {%each arr%}<div>{%=this%}</div>{%/each%}
@@ -60,20 +61,19 @@
 				// Catch
 				// Example: {%catch var a%}<div></div>{%/catch%}{%= a%}
 				"catch" : function (str) {
-					return str+"=$catch(function(){";
+					return str+"=$c(function(){";
 				},
 				"/catch" : function () {
 					return "});";
 				}
 			};
-			
-	// System function that adds replacement to $replace array in namespace ($scope)
+	// System function that adds replacement to $r array in namespace ($scope)
 	// And replaces original element with "<b ..></b>"
 	function $insert_jQuery(a,$replace) {
 	
-		$replace[$replace.length] = a;
+		$replace[$replace[length]] = a;
 		
-		return "<b id='_jquery_tpl_"+($replace.length-1)+"'></b>";
+		return "<b id='_jquery_tpl_"+($replace[length]-1)+"'></b>";
 	}
 	
 	// Render template, getting it from object
@@ -108,14 +108,14 @@
 	$.template = function (str , args, name) {		
 		// If have been cached by name
 		// $.template("name")
-		if (arguments.length===1) return namecache[str] || function () {};
+		if (arguments[length]===1) return namecache[str] || function () {};
 		
 		// If have been cached template
 		// $.template("%template%" , [ ["arg1", ... , "argN"] ], ["name"])
 		if (cache[str]) return cache[str];		
 				
 		var	namespace = {
-					$replace	:	[]
+					$r	:	[]
 				},
 				// Index
 				i,
@@ -149,7 +149,7 @@
 					// If there is modificator
 					if ( (i = elem.match($modificator)) && ( i.f = modificators[ i[1] ]) )	
 						// Use it to translate elem
-						elem = i.f(elem.substr(i[0].length));
+						elem = i.f(elem.substr(i[0][length]));
 					
 						return elem;
 				} else {
@@ -182,7 +182,7 @@
 					$_			:	[],
 					$p			:	$push,
 					$d			:	$deploy,
-					$catch	:	$catch
+					$c	:	$catch
 				}
 			);
 						
@@ -207,18 +207,18 @@
 			// Replace result if it's matching criteria
 			if (result.attr('id') == '_jquery_tpl_0')
 			
-				// All replacements are in namespace.$replace
+				// All replacements are in namespace.$r
 				// But we need only first, if object itself needs replacement
-				result = namespace.$replace[0];
+				result = namespace.$r[0];
 			else
 			// For each replacement
-			for (var i in namespace.$replace)				
+			for (var i in namespace.$r)				
 				// Find html element that must be replaced
 				// Place object before, and delete original
-				result.find('#_jquery_tpl_'+i).before(namespace.$replace[i]).remove();
+				result.find('#_jquery_tpl_'+i).before(namespace.$r[i]).remove();
 			
 			// Clean replacements, because they are in main namespace
-			namespace.$replace = [];
+			namespace.$r = [];
 			
 			// Return jQuery object
 			return result;
