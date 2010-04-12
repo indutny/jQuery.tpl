@@ -1,4 +1,4 @@
-/**@license jQuery Tpl plugin v.0.3.6
+/**@license jQuery Tpl plugin v.0.3.7
  ** Copyright 2010, Fedor Indutny 
  **/
  
@@ -126,7 +126,7 @@
 		// Delete null elements
 		// Set first argument $scope
 		args = $.merge(
-			["$scope"],
+			["$args"],
 			$.map(
 				args || [] ,
 				function(elem) {
@@ -167,9 +167,8 @@
 		).join("");
 		
 		// Create function with overdriven args
-		
-		i = new Function(args , "with($scope){(function(){"+str +"})();return $d();}");
-		
+		i=eval("[function ("+args.join(",")+"){with($args){(function(){"+str +"})();return $d();}}]")[0];		
+				
 		// And cache it wrapper, that will recreate scope and call original function
 		cache[str] = function (args) {
 			// Args can be null

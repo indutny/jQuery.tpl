@@ -29,31 +29,32 @@
 	</style>
 	
 	<script type="text/javascript" src="jquery.js"></script>
-	<script type="text/javascript" src="jquery.tpl.js"></script>
+	<script type="text/javascript" src="jquery.tpl.min.js"></script>
 	
-	<script type="text/html" class="class name id defval" id="placeholder-input">
+	<script type="text/html" class="c name id defval" id="placeholder-input">
 	{%
-		class.normal = class.normal || "";
-		class.def = class.def || "";
-		class.blank = class.blank || "";
+		c.normal = c.normal || "";
+		c.def = c.def || "";
+		c.blank = c.blank || "";
 		name = name || "";
 		defval = defval || "";
 	%}
 	{%catch var a%}
-		<input type="text" name="{%= name %}" {%= id?'id='+id:'' %} class="{%= class.def + " " + class.blank %}" value="{%= defval %}"/>
+		<input type="text" name="{%= name %}" {%= id?'id='+id:'' %} class="{%= c.def + " " + c.blank %}" value="{%= defval %}"/>
 	{%/catch%}
 	{%= (a=$(a)).focus(function() {
 		if (a.val() == defval)
-			a.removeClass(class.blank).addClass(class.normal).val('');
+			a.removeClass(c.blank).addClass(c.normal).val('');
 	}).blur(function () {		
 		if (a.val() == '')
-			a.removeClass(class.normal).addClass(class.blank).val(defval);
+			a.removeClass(c.normal).addClass(c.blank).val(defval);
 	}) %}
 	</script>
-	<script type="text/html" class="input def" id="my-form">
+	<script type="text/html" class="inputs def" id="my-form">
 	<div class="my-form">
 		<form>
 		<h4>Simple example (of jQuery.tpl):</h4>
+		
 		{%each inputs %}
 			<label class="my-form-label">{%= this.title %}:</label>
 			{%: placeholder-input $.extend(
@@ -77,7 +78,7 @@
 			$('#my-form').render({
 				def: {
 					a: undefined,
-					class: {
+					c: {
 						blank: "placeholder-input-blank",
 						def: "placeholder-input"
 					}
