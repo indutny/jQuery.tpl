@@ -1,4 +1,4 @@
-/**@license jQuery Tpl plugin v.0.3.9
+/**@license jQuery Tpl plugin v.0.3.10
  ** Copyright 2010, Fedor Indutny 
  **/
  
@@ -11,21 +11,42 @@
 			$modificator = /^([^\s]+)(?:\s|$)/,
 			$tabs = /\t/gm,
 			$spaces = /\s+/gm,
+			$decorator = /%1/gm,
+			// attribute cache
 			length = "length",
 			// functions
 			$push = function (a) {								
+				// Push string or object into global output stack
 				this.$_[this.$_[length]] =
 					(a instanceof $) ?
+						// If a is obj then push it's "ghost"
+						// After, we will replace it with jQuery obj
 						$insert_jQuery(a, this.$scope.$r) :
+						// If string - simply put it in stack
 						a;					
 			},
-			$deploy = function (){return this.$_.join("");},
+			$deploy = function (){
+				// Return concatenated global output stack
+				return this.$_.join("");
+			},
 			$catch = function ( callback ){
-				var old = this.$_;
-				this.$_=[];
+				// Store old ouput stack
+				var _this = this,
+				      old = _this.$_;
+				
+				// Create local new
+				_this.$_=[];
+				
+				// Run function in local output stack
 				callback();
-				callback = this.$_.join('');
-				this.$_= old;
+				
+				// Get output of result
+				callback = _this.$_.join('');
+				
+				// Revert to original
+				_this.$_= old;
+				
+				// Return result
 				return callback;
 			},
 			// modificators
@@ -34,15 +55,15 @@
 				// Direct output
 				// Can handle jQuery object!
 				// Example: {%= "hello world" %}
-				"="	:	function (str) { return "$p("+str+");";},
+				"="	:	preg_decorate("$p(%1);"),
 				
 				// Short-hand for functions
 				// Example: {%@ log() {console && console.log.apply(this,arguments);} %}
-				"@"	:	function (str) { return "function "+str;},
+				"@"	:	preg_decorate("function %1"),
 				
 				// Short-hand for scopes
 				// Example: {%~ alert(1) %}
-				"~"	:	function (str) { return "(function(){"+str+"})();";},
+				"~"	:	preg_decorate("(function(){%1})();"),
 				
 				// Short-hand for templates
 				// Example: {%:templatename {arg1:val1,arg2:val2} %}
@@ -52,21 +73,26 @@
 				},
 				// Short-hand for each method
 				// Example: {%each arr%}<div>{%=this%}</div>{%/each%}
-				"each": function (str) {
-					return "$.each("+str+",function(){";
-				},
-				"/each": function () {
-					return "});";
-				},
+				"each": preg_decorate("$.each(%1,function(){"),
+				"/each": return_decorate("});"),
 				// Catch
 				// Example: {%catch var a%}<div></div>{%/catch%}{%= a%}
-				"catch" : function (str) {
-					return str+"=$c(function(){";
-				},
-				"/catch" : function () {
-					return "});";
-				}
+				"catch" : preg_decorate("%1=$c(function(){"),
+				"/catch" : return_decorate("});")
 			};
+	// Generate function replacing pattern %1 in string
+	function preg_decorate(str) {		
+		return function (s) {
+			return str.replace($decorator,s,str);
+		};
+	}
+	
+	// Generate function simply returning obj
+	function return_decorate(obj) {
+		return function() {
+			return obj;
+		}
+	}
 	// System function that adds replacement to $r array in namespace ($scope)
 	// And replaces original element with "<b ..></b>"
 	function $insert_jQuery(a,$replace) {
@@ -147,9 +173,11 @@
 					// Code
 				
 					// If there is modificator
-					if ( (i = elem.match($modificator)) && ( i.f = modificators[ i[1] ]) )	
+					( (i = elem.match($modificator)) && ( i.f = modificators[ i[1] ]) ) &&
 						// Use it to translate elem
-						elem = i.f(elem.substr(i[0][length]));
+						(
+							elem = i.f(elem.substr(i[0][length]))
+						);
 					
 						return elem;
 				} else {
@@ -211,11 +239,11 @@
 				// But we need only first, if object itself needs replacement
 				result = namespace.$r[0];
 			else
-			// For each replacement
-			for (var i in namespace.$r)				
-				// Find html element that must be replaced
-				// Place object before, and delete original
-				result.find('#_jquery_tpl_'+i).before(namespace.$r[i]).remove();
+				// For each replacement
+				for (var i in namespace.$r)				
+					// Find html element that must be replaced
+					// Place object before, and delete original
+					result.find('#_jquery_tpl_'+i).before(namespace.$r[i]).remove();
 			
 			// Clean replacements, because they are in main namespace
 			namespace.$r = [];
