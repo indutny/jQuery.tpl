@@ -1,4 +1,4 @@
-/**@license jQuery Tpl plugin v.0.3.10
+/**@license jQuery Tpl plugin v.0.3.11
  ** Copyright 2010, Fedor Indutny 
  **/
  
@@ -11,7 +11,7 @@
 			$modificator = /^([^\s]+)(?:\s|$)/,
 			$tabs = /\t/gm,
 			$spaces = /\s+/gm,
-			$decorator = /%1/gm,
+			$decorator = /%1/,
 			// attribute cache
 			length = "length",
 			// functions
@@ -182,7 +182,7 @@
 						return elem;
 				} else {
 					// Text
-					if (elem ==="")
+					if (elem === "")
 						return null;
 					// Push text into namespace as $(var number)
 					namespace["$"+varcount] = elem;				
@@ -195,7 +195,7 @@
 		).join("");
 		
 		// Create function with overdriven args
-		i=eval("[function ("+args.join(",")+"){with($args){(function(){"+str +"})();return $d();}}]")[0];		
+		i=eval("(function ("+args.join(",")+"){with($args){(function(){"+str +"})();return $d();}})");
 				
 		// And cache it wrapper, that will recreate scope and call original function
 		cache[str] = function (args) {
