@@ -195,7 +195,7 @@
 		).join("");
 		
 		// Create function with overdriven args
-		eval("function i($args,"+args.join(",")+"){with($args){(function(){"+str +"})();return $d();}}");
+		i = eval("(function($args,"+args.join(",")+"){with($args){(function(){"+str +"})();return $d();}})");
 		
 		// And cache it wrapper, that will recreate scope and call original function
 		cache[str] = function (args) {
