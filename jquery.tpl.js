@@ -1,6 +1,6 @@
 /**@license jQuery Tpl plugin v.0.3.13
  ** Copyright 2010, Fedor Indutny 
- ** Dual licensed under the MIT or GPL Version 2 licenses.
+ ** Dual licensed under the Creative Commons 3.0 BY or GPL Version 2 licenses.
  **/
  
  (function ($,undefined) {
@@ -195,7 +195,7 @@
 		).join("");
 		
 		// Create function with overdriven args
-		eval("function i($args,"+args.join(",")+"){with($args){(function(){"+str +"})();return $d();}}]");
+		eval("function i($args,"+args.join(",")+"){with($args){(function(){"+str +"})();return $d();}}");
 		
 		// And cache it wrapper, that will recreate scope and call original function
 		cache[str] = function (args) {
