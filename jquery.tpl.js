@@ -1,4 +1,4 @@
-/**@license jQuery Tpl plugin v.0.3.12
+/**@license jQuery Tpl plugin v.0.3.13
  ** Copyright 2010, Fedor Indutny 
  **/
  
@@ -14,6 +14,7 @@
 			$decorator = /%1/,
 			// attribute cache
 			length = "length",
+			replace = "replace",
 			// functions
 			$push = function (a) {								
 				// Push string or object into global output stack
@@ -83,7 +84,7 @@
 	// Generate function replacing pattern %1 in string
 	function preg_decorate(str) {		
 		return function (s) {
-			return str.replace($decorator,s,str);
+			return str[replace]($decorator,s,str);
 		};
 	}
 	
@@ -163,7 +164,7 @@
 		// Go through each row
 		// And replace it with code
 		str = $.map(
-			str.replace($tabs," ").replace($brackets,"\t").split("\t"),
+			str[replace]($tabs," ")[replace]($brackets,"\t").split("\t"),
 			function ( elem, i) {
 		
 				if (i%2) {
@@ -193,7 +194,7 @@
 		).join("");
 		
 		// Create function with overdriven args
-		i=eval("[function($args,"+args.join(",")+"){with($args){(function(){"+str +"})();return $d();}}]")[0];
+		eval("function i($args,"+args.join(",")+"){with($args){(function(){"+str +"})();return $d();}}]");
 		
 		// And cache it wrapper, that will recreate scope and call original function
 		cache[str] = function (args) {
