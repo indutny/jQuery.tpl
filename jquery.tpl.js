@@ -1,4 +1,4 @@
-/**@license jQuery Tpl plugin v.0.3.11
+/**@license jQuery Tpl plugin v.0.3.12
  ** Copyright 2010, Fedor Indutny 
  **/
  
@@ -150,16 +150,13 @@
 				
 		// Args can be undefined
 		// Delete null elements
-		// Set first argument $scope
-		args = $.merge(
-			["$args"],
+		args = 
 			$.map(
 				args || [] ,
 				function(elem) {
 					return elem || null
 				}
-			)
-		);
+			);		
 		
 		
 		// Preprocess template				
@@ -196,7 +193,7 @@
 		).join("");
 		
 		// Create function with overdriven args
-		i=eval("[function ("+args.join(",")+"){with($args){(function(){"+str +"})();return $d();}}]")[0];
+		i=eval("[function($args,"+args.join(",")+"){with($args){(function(){"+str +"})();return $d();}}]")[0];
 		
 		// And cache it wrapper, that will recreate scope and call original function
 		cache[str] = function (args) {
