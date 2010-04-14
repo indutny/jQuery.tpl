@@ -1,5 +1,6 @@
 /**@license jQuery Tpl plugin v.0.3.13
  ** Copyright 2010, Fedor Indutny 
+ ** Dual licensed under the MIT or GPL Version 2 licenses.
  **/
  
  (function ($,undefined) {
