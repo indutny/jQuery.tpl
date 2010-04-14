@@ -180,23 +180,24 @@
 						);
 					
 						return elem;
-				} else {
-					// Text
-					if (elem === "")
-						return null;
-					// Push text into namespace as $(var number)
-					namespace["$"+varcount] = elem;				
-					// So, instead of inline printing we will print variable
-					return "$p($"+(varcount++)+");";				
 				}
+				
+				// Text
+				if (elem === "")
+					return null;
+				// Push text into namespace as $(var number)
+				namespace["$"+varcount] = elem;				
+				// So, instead of inline printing we will print variable
+				return "$p($"+(varcount++)+");";				
+				
 						
 			}
 		// Then join all rows
 		).join("");
 		
 		// Create function with overdriven args
-		i=eval("(function ("+args.join(",")+"){with($args){(function(){"+str +"})();return $d();}})");
-				
+		i=eval("[function ("+args.join(",")+"){with($args){(function(){"+str +"})();return $d();}}]")[0];
+		
 		// And cache it wrapper, that will recreate scope and call original function
 		cache[str] = function (args) {
 			// Args can be null
@@ -210,7 +211,7 @@
 					$_			:	[],
 					$p			:	$push,
 					$d			:	$deploy,
-					$c	:	$catch
+					$c			:	$catch
 				}
 			);
 						
@@ -221,6 +222,7 @@
 			args.$scope = namespace;
 			
 			// Return result of execution
+			
 			return i(args);
 		}
 		
