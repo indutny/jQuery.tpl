@@ -17,24 +17,27 @@
 			length = "length",
 			replace = "replace",
 			// functions
-			$push = function (a) {								
+			$push = function (a,_this) {								
+				
 				// Push string or object into global output stack
-				this.$_[this.$_[length]] =
+				(_this=this).$_[_this.$_[length]] =
 					(a instanceof $) ?
 						// If a is obj then push it's "ghost"
 						// After, we will replace it with jQuery obj
-						$insert_jQuery(a, this.$scope.$r) :
+						$insert_jQuery(a, _this.$scope.$r) :
 						// If string - simply put it in stack
 						a;					
 			},
+			/** @return {string} */
 			$deploy = function (){
 				// Return concatenated global output stack
 				return this.$_.join("");
 			},
-			$catch = function ( callback ){
+			/** @return {string} */
+			$catch = function ( callback ,_this){
 				// Store old ouput stack
-				var _this = this,
-				      old = _this.$_;
+				var 
+				      old = (_this=this).$_;
 				
 				// Create local new
 				_this.$_=[];
@@ -57,46 +60,59 @@
 				// Direct output
 				// Can handle jQuery object!
 				// Example: {%= "hello world" %}
+				/** @return {string} */
 				"="	:	preg_decorate("$p(%1);"),
 				
 				// Short-hand for functions
 				// Example: {%@ log() {console && console.log.apply(this,arguments);} %}
+				/** @return {string} */
 				"@"	:	preg_decorate("function %1"),
 				
 				// Short-hand for scopes
 				// Example: {%~ alert(1) %}
+				/** @return {string} */
 				"~"	:	preg_decorate("(function(){%1})();"),
 				
 				// Short-hand for templates
 				// Example: {%:templatename {arg1:val1,arg2:val2} %}
+				/** @return {string} */
 				":" : function (str) {
 					var name = str.match($modificator);
 					return "$p($.template('"+name[1]+"').render(" + str.substr(name[0][length]) + "));";
 				},
 				// Short-hand for each method
 				// Example: {%each arr%}<div>{%=this%}</div>{%/each%}
+				/** @return {string} */
 				"each": preg_decorate("$.each(%1,function(){"),
+				/** @return {string} */
 				"/each": return_decorate("});"),
 				// Catch
 				// Example: {%catch var a%}<div></div>{%/catch%}{%= a%}
+				/** @return {string} */
 				"catch" : preg_decorate("%1=$c(function(){"),
+				/** @return {string} */
 				"/catch" : return_decorate("});")
 			};
 	// Generate function replacing pattern %1 in string
+	/** @return {Function} */
 	function preg_decorate(str) {		
+		/** @return {string} */
 		return function (s) {
 			return str[replace]($decorator,s,str);
 		};
 	}
 	
 	// Generate function simply returning obj
+	/** @return {Function} */
 	function return_decorate(obj) {
+		
 		return function() {
 			return obj;
 		}
 	}
 	// System function that adds replacement to $r array in namespace ($scope)
 	// And replaces original element with "<b ..></b>"
+	/** @return {string} */
 	function $insert_jQuery(a,$replace) {
 	
 		$replace[$replace[length]] = a;
@@ -133,6 +149,7 @@
 	// $.template("name") - get cached template with name
 	// $.template("%template%", {args}, [name]) - generate template and optionally give it a name
 	// Args = optional arguments that can be null
+	/** @return {Function} */
 	$.template = function (str , args, name) {		
 		// If have been cached by name
 		// $.template("name")
@@ -198,6 +215,7 @@
 		i = eval("(function($args,"+args.join(",")+"){with($args){(function(){"+str +"})();return $d();}})");
 		
 		// And cache it wrapper, that will recreate scope and call original function
+		/** @return {string} */
 		cache[str] = function (args) {
 			// Args can be null
 			// So we must handle it
