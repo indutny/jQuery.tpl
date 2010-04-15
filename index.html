@@ -26,6 +26,15 @@
 		.my-form-submit {
 			width: 100%;
 		}
+		.progressbar {
+			height: 20px;
+			background: white;
+		}
+		.progressbar div {
+			height: 100%;
+			width: 0;
+			background: blue;
+		}
 	</style>
 	
 	<script type="text/javascript" src="jquery.js"></script>
@@ -50,7 +59,20 @@
 			a.removeClass(c.normal).addClass(c.blank).val(defval);
 	}) %}
 	</script>
-	<script type="text/html" class="inputs def" id="my-form">
+	
+	<script type="text/html" class="callback" id="progressbar">
+		<div class="progressbar">
+			{%catch var a%}<div></div>{%/catch%}
+			{%= a=$(a) %}
+			{%
+			callback(function (value) {
+				a.stop().animate({width: value+"%"});
+			});
+			%}
+		</div>
+	</script>
+	
+	<script type="text/html" class="inputs def cb" id="my-form">
 	<div class="my-form">
 		<form>
 		<h4>Simple example (of jQuery.tpl):</h4>
@@ -66,7 +88,19 @@
 					this) %}
 			<div style="clear:both"></div>
 		{%/each %}
-		<input type="submit" value="Submit form" class="my-form-submit"/>
+		{%: progressbar {
+			callback : function (s) {
+				cb = s;
+			}
+		} %}
+		{%catch var a%}<input type="submit" value="Submit form" class="my-form-submit"/>{%/catch%}
+		{%= a=$(a) %}
+		{% 
+			a.click(function (E) {
+				E.preventDefault();
+				cb(100);
+			});
+		%}
 		</form>
 		<br/>
 		<small><i>coded by <a href="http://blog.habrastat.ru/">Fedor Indutny</a>, 2010</i></small>
@@ -75,6 +109,8 @@
 	<script type="text/javascript">
 		$(function () {
 			$("#placeholder-input").render("placeholder-input");
+			$("#progressbar").render("progressbar");
+			
 			$('#my-form').render({
 				def: {
 					a: undefined,
