@@ -84,7 +84,7 @@
 					/** @return {string} */
 					":" : function (str) {
 						var name = str.match($modificator);
-						return "$p($.template('"+name[1]+"').render(" + str.substr(name[0][length]) + "));";
+						return "$p($.template('"+name[1]+"')(" + str.substr(name[0][length]) + "));";
 					},
 					// Short-hand for each method
 					// Example: {%each arr%}<div>{%=this%}</div>{%/each%}
@@ -148,7 +148,7 @@
 			
 			// If we have arguments - generate object
 			// Else return jQuery
-			return args ? fn.render(args): $;
+			return args ? fn(args): $;
 		}
 		
 		// Generate, cache, return template
@@ -181,8 +181,8 @@
 					function(elem) {
 						return elem || null
 					}
-				);		
-			
+				);
+			args[args.length]="$$";
 			
 			// Preprocess template				
 			// Go through each row
@@ -219,11 +219,39 @@
 			
 			// Create function with overdriven args
 			// In secure closure
-			i = $eval("[function($args,"+args.join(",")+"){with($args){(function(){"+str +"})();return $d();}}]");
+			i = $eval("[function($args,"+args.join(",")+"){with($args){(function(){"+str +"})();return $d();}}]");						
+			
+			// Cache wrapper by str key
+			// Replaces <b id="_jquery_tpl_[i]"></b> with "TRUE" jQuery objects
+			// And so it's returning jQuery object
+			cache[str] = function (args) {
+				
+				// Get result of wrapper
+				var result = $(cache[str].html(args));
+				
+				// Replace result if it's matching criteria
+				if (result.attr('id') == '_jquery_tpl_0')
+				
+					// All replacements are in namespace.$r
+					// But we need only first, if object itself needs replacement
+					result = namespace.$r[0];
+				else
+					// For each replacement
+					for (var i in namespace.$r)				
+						// Find html element that must be replaced
+						// Place object before, and delete original
+						result.find('#_jquery_tpl_'+i).before(namespace.$r[i]).remove();
+				
+				// Clean replacements, because they are in main namespace
+				namespace.$r = [];
+				
+				// Return jQuery object
+				return result;
+			}
 			
 			// And cache it wrapper, that will recreate scope and call original function
 			/** @return {string} */
-			cache[str] = function (args) {
+			cache[str].html = function (args) {
 				// Args can be null
 				// So we must handle it
 				// "_" - is accumulator of output
@@ -248,35 +276,7 @@
 				// Return result of execution				
 				return i(args);
 			}
-			
-			// Wrapper of wrapper
-			// Replaces <b id="_jquery_tpl_[i]"></b> with "TRUE" jQuery objects
-			// And so it's returning jQuery object
-			cache[str].render = function (args) {
 				
-				// Get result of wrapper
-				var result = $(this(args));
-				
-				// Replace result if it's matching criteria
-				if (result.attr('id') == '_jquery_tpl_0')
-				
-					// All replacements are in namespace.$r
-					// But we need only first, if object itself needs replacement
-					result = namespace.$r[0];
-				else
-					// For each replacement
-					for (var i in namespace.$r)				
-						// Find html element that must be replaced
-						// Place object before, and delete original
-						result.find('#_jquery_tpl_'+i).before(namespace.$r[i]).remove();
-				
-				// Clean replacements, because they are in main namespace
-				namespace.$r = [];
-				
-				// Return jQuery object
-				return result;
-			}
-			
 			// If name is defined
 			if (name)
 				// Add to name cache
