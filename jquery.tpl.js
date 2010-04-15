@@ -4,8 +4,9 @@
  **/
 (function(undefined) {
 	/* Escaping closure */
+	/** @return {Function} */
 	function $eval(a) {
-		return eval(a);
+		return eval(a)[0];
 	}
  
 	 (function ($) {
@@ -217,7 +218,8 @@
 			).join("");
 			
 			// Create function with overdriven args
-			i = $eval("(function($args,"+args.join(",")+"){with($args){(function(){"+str +"})();return $d();}})");
+			// In secure closure
+			i = $eval("[function($args,"+args.join(",")+"){with($args){(function(){"+str +"})();return $d();}}]");
 			
 			// And cache it wrapper, that will recreate scope and call original function
 			/** @return {string} */
@@ -243,8 +245,7 @@
 				// Attach permament scope to namespace	
 				args.$scope = namespace;
 				
-				// Return result of execution
-				
+				// Return result of execution				
 				return i(args);
 			}
 			
