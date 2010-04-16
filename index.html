@@ -2,6 +2,22 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 	<style type="text/css">
+		@font-face {
+			font-family: YanoneKaffeesatz;
+			src: url(fonts/YanoneKaffeesatz-Regular.otf) format("opentype");
+		}
+ 
+		@font-face {
+			font-family: YanoneKaffeesatz;
+			src: url(fonts/YanoneKaffeesatz-Bold.otf) format("opentype");
+			font-weight: bold;
+		}
+ 
+		body {
+			font-family: YanoneKaffeesatz, Lucida Console, sans-serif;
+			margin: 0;
+		}
+	
 		input.placeholder-input-blank {
 			color: #ccc;
 			border: 1px solid #b6dcf8;
@@ -18,13 +34,17 @@
 			font-size: 20px;
 		}
 		.placeholder-input {
+			font-family: YanoneKaffeesatz, Lucida Console, sans-serif;
+			font-size: 16px;
 			float: right;
 			clear: right;			
 			border: 1px solid #307bb0;
 			height: 20px;
 			margin: 2px;
+			width: 200px;
 		}
 		.my-form-submit {
+			font-family: YanoneKaffeesatz, Lucida Console, sans-serif;
 			width: 296px;
 			border: 1px solid #b6dcf8;
 			height: 40px;
@@ -60,6 +80,27 @@
 	
 	<script type="text/javascript" src="jquery.js"></script>
 	<script type="text/javascript" src="jquery.tpl.min.js"></script>
+
+	<script type="text/html" class="call args" id="centrify">
+		{% /**
+				*	Here comes centrify template
+				*	All you need to pass is template name (as call) and args to pass to template
+				*	Note that after rendering this template you must call $(window).resize();
+				*/ %}
+		{%
+			var x = $.template(call)(args),
+				  t = $("<div style='position:fixed'/>").append(x);
+			function css() {				
+				t.css({
+					top: ($(window).height() - t.height())/2,
+					left: ($(window).width() - t.width())/2
+				});
+			}
+			
+			$(window).resize(css);
+		%}
+		{%= t %}		
+	</script>
 	
 	<script type="text/html" class="callback" id="progressbar">
 		{% /**
@@ -152,7 +193,7 @@
 	<div class="my-form">
 		<form method="POST">
 		
-		<h4>Simple example (of jQuery.tpl):</h4>
+		<h2>Simple example (of jQuery.tpl):</h2>
 		
 		{% /**
 				*	We will go through all inputs
@@ -211,21 +252,25 @@
 		$(function () {
 			$("#progressbar").render("progressbar");
 			$("#placeholder-input").render("placeholder-input");
-			
-			$('#my-form').render({
-				def: {
-					c: {
-						blank: "placeholder-input-blank",
-						def: "placeholder-input"
-					}
+			$('#my-form').render("form");			
+			$('#centrify').render({
+				args:{
+					def: {
+						c: {
+							blank: "placeholder-input-blank",
+							def: "placeholder-input"
+						}
+					},
+					inputs: [
+						{ title: "First name", name: "firstname",  defval: "Adam",max:20},
+						{ title: "Second name", name: "secondname",  defval: "Rogers",max:23},
+						{ title: "Country", name: "country",  defval: "USA",max:15},
+						{ title: "Job", name: "job",  defval: "Coder",max:27}
+					]
 				},
-				inputs: [
-					{ title: "First name", name: "firstname",  defval: "Adam",max:10},
-					{ title: "Second name", name: "secondname",  defval: "Rogers",max:10},
-					{ title: "Country", name: "country",  defval: "USA",max:10},
-					{ title: "Job", name: "job",  defval: "Coder",max:10}
-				]
+				call: "form"
 			}).appendTo('body');
+			$(window).resize();
 		});
 	</script>
 	<title>jQuery.tpl plugin's demo site</title>	
