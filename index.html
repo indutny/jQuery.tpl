@@ -4,6 +4,7 @@
 	<style type="text/css">
 		input.placeholder-input-blank {
 			color: #ccc;
+			border: 1px solid #b6dcf8;
 		}
 		.my-form {
 			margin-left: auto;
@@ -18,91 +19,187 @@
 		}
 		.placeholder-input {
 			float: right;
-			clear: right;
-			border:1px solid #333;
+			clear: right;			
+			border: 1px solid #307bb0;
 			height: 20px;
 			margin: 2px;
 		}
 		.my-form-submit {
-			width: 100%;
+			width: 296px;
+			border: 1px solid #b6dcf8;
+			height: 40px;
+			font-size: 16px;
+			margin-top: 3px;
+			cursor: pointer;
+			background:-webkit-gradient(
+				linear,
+				left bottom,
+				left top,
+				color-stop(0.35, rgb(189,189,189)),
+				color-stop(0.64, rgb(224,224,224))
+			);			
+			background:-moz-linear-gradient(
+				center bottom,
+				rgb(189,189,189) 35%,
+				rgb(224,224,224) 64%
+			);
 		}
 		.progressbar {
+			width: 296px;
 			height: 20px;
 			background: white;
+			border: 1px solid #b6dcf8;
+			float: left;
 		}
 		.progressbar div {
 			height: 100%;
 			width: 0;
-			background: blue;
+			background: #1a5077;
 		}
 	</style>
 	
 	<script type="text/javascript" src="jquery.js"></script>
-	<script type="text/javascript" src="jquery.tpl.js"></script>
+	<script type="text/javascript" src="jquery.tpl.min.js"></script>
+	
+	<script type="text/html" class="callback" id="progressbar">
+		{% /**
+			  *	Here comes progressbar.
+		      *	All you need to pass is callback that will receive function to change value of progressbar
+			*/ %}
+		<div class="progressbar">
+		
+			{% /**
+					* Catch inner div into a
+					*/	%}
+			{%catch var a%}<div></div>{%/catch%}
+			
+			{% /**
+				  * Create jQuery object and print it
+				  */ %}
+			{%= a=$(a) %}
+			
+			{% /** Send a function to change progressbar position */ %}
+			
+			{%
+			callback(function (value) {
+				a.stop().animate({width: (value>0?(value>100?100:value):0)+"%"});
+			});
+			%}
+		</div>
+	</script>
 	
 	<script type="text/html" class="c cb name max id defval" id="placeholder-input">
+	{% /**
+			  *	Here comes input element.
+		      *	Input arguments:
+			  *	c - default classes for inputs
+			  *	name - name of input
+			  *	max	- max character count
+			  *	defval - gray default value (that will replace blank value)
+			*/ %}
+	
 	{%
+		// Initialize input data
+		c = c || {};
 		c.normal = c.normal || "";
 		c.def = c.def || "";
 		c.blank = c.blank || "";
 		name = name || "";
 		defval = defval || "";
 	%}
+	
+	{% /** Get into a html of input created using input data */ %}
 	{%catch var a%}
-		<input type="text" name="{%= name %}" {%= id?'id='+id:'' %} class="{%= c.def + " " + c.blank %}" value="{%= defval %}"/>
+		<input type="text" {%= max? 'maxlength="'+max+'"': '' %} name="{%= name %}" {%= id?'id='+id:'' %} class="{%= c.def + " " + c.blank %}" value="{%= defval %}"/>
 	{%/catch%}	
 	
+	{% /** Create jQuery object, print it and attach some events */ %}
+	{%= (a=$(a)).focus(function() {
+	
+		if (a.val() == defval)
+			a.removeClass(c.blank).addClass(c.normal).val('');
+			
+	}).blur(function () {		
+	
+		if (a.val() == '')
+			a.removeClass(c.normal).addClass(c.blank).val(defval);
+			
+	}).keyup(function () {
+	
+		cb ( (a.val().length/(max||1))*100);
+		
+	})	%}
+	{% /** Create progressbar, calling template by name
+			* Note: to use this type of printing you need to define template in your script
+			* For example: $('#progressbar').render("progressbar");
+			*/ %}
 	{%: progressbar {
 			callback : function (s) {
+				
+				// Save callback
 				cb = s;				
 			}
 		} %}
-	
-	{%= (a=$(a)).focus(function() {
-		if (a.val() == defval)
-			a.removeClass(c.blank).addClass(c.normal).val('');
-	}).blur(function () {		
-		if (a.val() == '')
-			a.removeClass(c.normal).addClass(c.blank).val(defval);
-	}).keyup(function () {
-		cb ( (a.val().length/(max||1))*100);
-	})	%}
-	
 	</script>
 	
-	<script type="text/html" class="callback" id="progressbar">
-		<div class="progressbar">
-			{%catch var a%}<div></div>{%/catch%}
-			{%= a=$(a) %}
-			{%
-			callback(function (value) {
-				a.stop().animate({width: value+"%"});
-			});
-			%}
-		</div>
-	</script>
+
 	
 	<script type="text/html" class="inputs def" id="my-form">
+	{% /**
+			*	Here comes form with inputs
+		    *	All you need to pass is inputs array and default values
+			*/ %}
 	<div class="my-form">
-		<form>
+		<form method="POST">
+		
 		<h4>Simple example (of jQuery.tpl):</h4>
 		
+		{% /**
+				*	We will go through all inputs
+				*/ %}
 		{%each inputs %}
+			
+			{% /**
+					*	Create labels based on inputs[...].title
+					*/ %}
 			<label class="my-form-label">{%= this.title %}:</label>
+			
+			{% /**
+					*	Call template with name "placeholder-input"
+					*	
+					*/ %}
 			{%: placeholder-input $.extend(
-					true,
-					$.extend(
-						{},
-						def
-					),
-					this) %}
+												true,
+												$.extend(
+													{},
+													def
+												),
+											this) %}
+																					
 			<div style="clear:both"></div>
+			
 		{%/each %}
+		
+		{% /**
+				*	Here comes submit button
+				*	Catch it in a variable
+				*/ %}
 		{%catch var a%}<input type="submit" value="Submit form" class="my-form-submit"/>{%/catch%}
+		
+		{% /**
+				*	Print jQuery object
+				*/ %}
 		{%= a=$(a) %}
+		
+		{% /**
+				*	Attach events
+				*/ %}
 		{% 
-			a.click(function (E) {
-				E.preventDefault();
+			a.click(function (E) {				
+				if (confirm("Do you really want to post data?")) {
+					
+				} else 
+					E.preventDefault();
 			});
 		%}
 		</form>
@@ -117,17 +214,16 @@
 			
 			$('#my-form').render({
 				def: {
-					a: undefined,
 					c: {
 						blank: "placeholder-input-blank",
 						def: "placeholder-input"
 					}
 				},
 				inputs: [
-					{ title: "First name", name: "firstname",  defval: "Adam"},
-					{ title: "Second name", name: "secondname",  defval: "Rogers"},
-					{ title: "Country", name: "country",  defval: "USA"},
-					{ title: "Job", name: "job",  defval: "Coder"}
+					{ title: "First name", name: "firstname",  defval: "Adam",max:10},
+					{ title: "Second name", name: "secondname",  defval: "Rogers",max:10},
+					{ title: "Country", name: "country",  defval: "USA",max:10},
+					{ title: "Job", name: "job",  defval: "Coder",max:10}
 				]
 			}).appendTo('body');
 		});
@@ -142,7 +238,7 @@ _gaq.push(
     ['_setDomainName', 'dev.habrastat.ru'],
     ["_addOrganic", "mail.ru", "q"],
     ["_addOrganic","rambler.ru", "words"],
-    ["_addOrganic","nigma.ru", "s"],
+	["_addOrganic","nigma.ru", "s"],
     ["_addOrganic","blogs.yandex.ru", "text"],
     ["_addOrganic","webalta.ru", "q"],
     ["_addOrganic","aport.ru", "r"],

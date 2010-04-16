@@ -1,4 +1,4 @@
-/**@license jQuery Tpl plugin v.0.3.13
+/**@license jQuery Tpl plugin v.0.3.14
  ** Copyright 2010, Fedor Indutny 
  ** Dual licensed under the Creative Commons 3.0 BY or GPL Version 2 licenses.
  **/
@@ -35,7 +35,7 @@
 							a;					
 				},
 				/** @return {string} */
-				$deploy = function (){
+				$deploy = function (){					
 					// Return concatenated global output stack
 					return this.$_.join("");
 				},
@@ -67,7 +67,7 @@
 					// Can handle jQuery object!
 					// Example: {%= "hello world" %}
 					/** @return {string} */
-					"="	:	preg_decorate("$p(%1);"),
+					"="	:	preg_decorate("$p(%1);"),					
 					
 					// Short-hand for functions
 					// Example: {%@ log() {console && console.log.apply(this,arguments);} %}
@@ -120,7 +120,7 @@
 		// And replaces original element with "<b ..></b>"
 		/** @return {string} */
 		function $insert_jQuery(a,$replace) {
-		
+			
 			$replace[$replace[length]] = a;
 			
 			return "<b id='_jquery_tpl_"+($replace[length]-1)+"'></b>";
@@ -227,26 +227,19 @@
 			cache[str] = function (args) {
 				
 				// Get result of wrapper
-				var result = $(cache[str].html(args));
+				var result = $("<b>"+cache[str].html(args)+"</b>");
 				
-				// Replace result if it's matching criteria
-				if (result.attr('id') == '_jquery_tpl_0')
-				
-					// All replacements are in namespace.$r
-					// But we need only first, if object itself needs replacement
-					result = namespace.$r[0];
-				else
-					// For each replacement
-					for (var i in namespace.$r)				
-						// Find html element that must be replaced
-						// Place object before, and delete original
-						result.find('#_jquery_tpl_'+i).before(namespace.$r[i]).remove();
+				// For each replacement
+				for (var i in namespace.$r)				
+					// Find html element that must be replaced
+					// Place object before, and delete original
+					result.find('#_jquery_tpl_'+i).before(namespace.$r[i]).remove();
 				
 				// Clean replacements, because they are in main namespace
 				namespace.$r = [];
 				
 				// Return jQuery object
-				return result;
+				return result.find('>*');
 			}
 			
 			// And cache it wrapper, that will recreate scope and call original function
