@@ -70,14 +70,29 @@
 			background: white;
 			border: 1px solid #b6dcf8;
 			float: left;
+			text-align: left;
 		}
 		.progressbar div {
 			height: 100%;
 			width: 0;
 			background: #1a5077;
 		}
+		.fix-opera {
+			font-size: 12px;
+			line-height: 27px;
+		}
 	</style>
-	
+	<!--[if IE]>
+	<style type="text/css">
+		.my-form-label {
+			font-size: 12px;
+			line-height: 27px;
+		}
+		html,body {
+			height: 100%;
+		}
+	</style>
+	<![endif]-->	
 	<script type="text/javascript" src="jquery.js"></script>
 	<script type="text/javascript" src="jquery.tpl.min.js"></script>
 
@@ -90,7 +105,7 @@
 		{%
 			var x = $.template(call)(args),
 				  t = $("<div style='position:fixed'/>").append(x);
-			function css() {				
+			function css() {								
 				t.css({
 					top: ($(window).height() - t.height())/2,
 					left: ($(window).width() - t.width())/2
@@ -250,9 +265,16 @@
 	</script>
 	<script type="text/javascript">
 		$(function () {
+			// Compile and define "progressbar" template
 			$("#progressbar").render("progressbar");
+			
+			// Compiler and define "placeholder-input" template
 			$("#placeholder-input").render("placeholder-input");
+			
+			// Compiler and define "form" template
 			$('#my-form').render("form");			
+			
+			// Compiler and run template to centrify
 			$('#centrify').render({
 				args:{
 					def: {
@@ -270,7 +292,13 @@
 				},
 				call: "form"
 			}).appendTo('body');
+			
+			// Centrify after render
 			$(window).resize();
+			
+			// Some bugs in opera
+			if ($.browser.opera)
+				$('.my-form-label').addClass('fix-opera');
 		});
 	</script>
 	<title>jQuery.tpl plugin's demo site</title>	
