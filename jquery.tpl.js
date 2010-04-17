@@ -1,4 +1,4 @@
-/**@license jQuery Tpl plugin v.0.3.14
+/**@license jQuery Tpl plugin v.0.3.15
  ** Copyright 2010, Fedor Indutny 
  ** Dual licensed under the Creative Commons 3.0 BY or GPL Version 2 licenses.
  **/
@@ -156,7 +156,7 @@
 		// $.template("%template%", {args}, [name]) - generate template and optionally give it a name
 		// Args = optional arguments that can be null
 		/** @return {Function} */
-		$.template = function (str , args, name) {		
+		$.template = function (str , args, name) {
 			// If have been cached by name
 			// $.template("name")
 			if (arguments[length]===1) return namecache[str] || function () {};
@@ -278,5 +278,7 @@
 			// Return wrapper
 			return cache[str];
 		}
+		// Add modificators to $.template
+		$.template.modificators = modificators;
 	})(jQuery);
 })();
