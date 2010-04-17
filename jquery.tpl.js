@@ -1,6 +1,6 @@
 /**@license jQuery Tpl plugin v.0.3.15
  ** Copyright 2010, Fedor Indutny 
- ** Dual licensed under the Creative Commons 3.0 BY or GPL Version 2 licenses.
+ ** Released with MIT license
  **/
 (function(undefined) {
 	/* Escaping closure */
