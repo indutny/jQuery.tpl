@@ -1,4 +1,4 @@
-/**@license jQuery Tpl plugin v.0.3.15
+/**@license jQuery Tpl plugin v.0.3.16
  ** Copyright 2010, Fedor Indutny 
  ** Released with MIT license
  **/
