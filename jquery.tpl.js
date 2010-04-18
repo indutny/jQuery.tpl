@@ -1,4 +1,4 @@
-/**@license jQuery Tpl plugin v.0.3.16
+/**@license jQuery Tpl plugin v.0.3.17
  ** Copyright 2010, Fedor Indutny 
  ** Released with MIT license
  **/
@@ -23,42 +23,16 @@
 				length = "length",
 				replace = "replace",
 				// functions
-				$push = function (a,_this) {								
+				$push = function (a,$_) {								
 					
 					// Push string or object into global output stack
-					(_this=this).$_[_this.$_[length]] =
+					$_[$_[length]] =
 						(a instanceof $) ?
 							// If a is obj then push it's "ghost"
 							// After, we will replace it with jQuery obj
-							$insert_jQuery(a, _this.$scope.$r) :
+							$insert_jQuery(a, this.$scope.$r) :
 							// If string - simply put it in stack
 							a;					
-				},
-				/** @return {string} */
-				$deploy = function (){					
-					// Return concatenated global output stack
-					return this.$_.join("");
-				},
-				/** @return {string} */
-				$catch = function ( callback ,_this){
-					// Store old ouput stack
-					var 
-						  old = (_this=this).$_;
-					
-					// Create local new
-					_this.$_=[];
-					
-					// Run function in local output stack
-					callback();
-					
-					// Get output of result
-					callback = _this.$_.join('');
-					
-					// Revert to original
-					_this.$_= old;
-					
-					// Return result
-					return callback;
 				},
 				// modificators
 				modificators = {
@@ -67,7 +41,7 @@
 					// Can handle jQuery object!
 					// Example: {%= "hello world" %}
 					/** @return {string} */
-					"="	:	preg_decorate("$p(%1);"),					
+					"="	:	preg_decorate("$p(%1,$_);"),					
 					
 					// Short-hand for functions
 					// Example: {%@ log() {console && console.log.apply(this,arguments);} %}
@@ -84,7 +58,7 @@
 					/** @return {string} */
 					":" : function (str) {
 						var name = str.match($modificator);
-						return "$p($.template('"+name[1]+"')(" + str.substr(name[0][length]) + "));";
+						return "$p($.template('"+name[1]+"')(" + str.substr(name[0][length]) + "),$_);";
 					},
 					// Short-hand for each method
 					// Example: {%each arr%}<div>{%=this%}</div>{%/each%}
@@ -95,9 +69,9 @@
 					// Catch
 					// Example: {%catch var a%}<div></div>{%/catch%}{%= a%}
 					/** @return {string} */
-					"catch" : preg_decorate("%1=$c(function(){"),
+					"catch" : preg_decorate("%1=(function(){var $_=[];"),
 					/** @return {string} */
-					"/catch" : return_decorate("});")
+					"/catch" : return_decorate("return $_.join('')})();")
 				};
 		// Generate function replacing pattern %1 in string
 		/** @return {Function} */
@@ -164,8 +138,9 @@
 			// If have been cached template
 			// $.template("%template%" , [ ["arg1", ... , "argN"] ], ["name"])
 			if (cache[str]) return cache[str];		
-					
-			var	namespace = {
+			
+			var	compiled,
+					namespace = {
 						$r	:	[]
 					},
 					// Index
@@ -182,12 +157,12 @@
 						return elem || null
 					}
 				);
-			args[args.length]="$$";
+			args[args[length]]="$_";
 			
 			// Preprocess template				
 			// Go through each row
 			// And replace it with code
-			str = $.map(
+			compiled = $.map(
 				str[replace]($tabs," ")[replace]($brackets,"\t").split("\t"),
 				function ( elem, i) {
 			
@@ -210,7 +185,7 @@
 					// Push text into namespace as $(var number)
 					namespace["$"+varcount] = elem;				
 					// So, instead of inline printing we will print variable
-					return "$p($"+(varcount++)+");";				
+					return "$p($"+(varcount++)+",$_);";				
 					
 							
 				}
@@ -219,7 +194,7 @@
 			
 			// Create function with overdriven args
 			// In secure closure
-			i = $eval("[function($args,"+args.join(",")+"){with($args){(function(){"+str +"})();return $d();}}]");						
+			i = $eval("[function($args,"+args.join(",")+"){$_=[];with($args){(function(){" + compiled + "})();}return $_.join('');}]");						
 			
 			// Cache wrapper by str key
 			// Replaces <b id="_jquery_tpl_[i]"></b> with "TRUE" jQuery objects
@@ -246,20 +221,11 @@
 			/** @return {string} */
 			cache[str].html = function (args) {
 				// Args can be null
-				// So we must handle it
-				// "_" - is accumulator of output
-				// "p" - pushes data into "_"
-				// "d" - joins all rows in "_" and returns output string
-				$.extend(
-					(args = args || {}),
-					{
-						$_			:	[],
-						$p			:	$push,
-						$d			:	$deploy,
-						$c			:	$catch
-					}
-				);
-							
+				args = args || {},
+				
+				// Add push function
+				args.$p = $push;
+				
 				// Append namespace to args
 				$.extend(true, args, namespace);
 				
@@ -269,7 +235,7 @@
 				// Return result of execution				
 				return i(args);
 			}
-				
+			
 			// If name is defined
 			if (name)
 				// Add to name cache
