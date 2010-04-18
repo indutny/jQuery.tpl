@@ -1,0 +1,359 @@
+<!doctype html>
+<html>
+<head>
+	<style type="text/css">
+		div {
+			padding: 3px;
+			margin: 3px;
+			float: left;
+			border: 3px solid black;
+			background: #333;
+			color: white;
+			-webkit-box-shadow: 3px 3px 5px #555;
+		}
+		div.done {
+			background: #1c5;
+		}
+	</style>
+	<script type="text/javascript" src="jquery.js"></script>
+	<script type="text/javascript" src="jquery.tpl.min.js"></script>
+	<script type="text/javascript">
+		var start, benchmarks=[], global=0;
+		function _start() {
+			start = +new Date;
+		}
+		function _end() {
+			return (+new Date - start);
+		}
+		
+		function run(i , result) {
+			i = i || 0;
+			
+			if (benchmarks[ i ])
+				result = benchmarks[ i ]();
+			else
+				return done();
+			
+			$('body').append($('<div class="' + (result ? "done": "not") + '">Test # ' + i + '</div>').hide().fadeIn(250,function() {
+				run(i+1);
+			}));
+			
+			//setTimeout(function() { run(i+1);},0);
+		}
+		
+		function done() {
+			$('body').append($('<div class="done">All tests done : ' + global +'</div>').hide().fadeIn(250));
+		}
+		
+		benchmarks.push(function () {
+			try {
+			console.info("Only string");
+			
+			_start();
+			
+			var got = $.template("Only string",{}).html(),
+				expected = "Only string";
+			
+			global+=_end();
+			
+			if (got === expected) {
+				console.log("ok");
+				return 1;
+			} else
+				console.error("error", "Got:",got,"Expected:",expected);
+			} catch (e) {
+			}
+		});
+		
+		benchmarks.push(function () {
+			try {
+			console.info("Only eval");
+			
+			_start();
+			
+			var got = $.template("{%= 'Only eval' %}",{}).html(),
+				expected = "Only eval"; 
+			
+			global+=_end();
+			
+			if (got === expected) {
+				console.log("ok");
+				return 1;
+			} else
+				console.error("error", "Got:",got,"Expected:",expected);
+			} catch (e) {
+			}
+		});
+		
+		benchmarks.push(function () {
+			try {
+			console.info("Only eval variable");
+			
+			_start();
+			
+			var got = $.template("{%= a %}",{}).html({a:"Only eval variable"}),
+				  expected = "Only eval variable";
+			
+			global+=_end();
+			
+			if (got === expected) {
+				console.log("ok");
+				return 1;
+			} else
+				console.error("error", "Got:",got,"Expected:",expected);
+			} catch (e) {
+			}
+		});
+		
+		benchmarks.push(function () {
+			try {
+			console.info("Eval and str");
+			
+			_start();
+			
+			var got = $.template("Work{%= ' is ' %}hard",{}).html(),
+				expected = "Work is hard";
+			
+			global+=_end();
+			
+			if (got === expected) {
+				console.log("ok");
+				return 1;
+			} else
+				console.error("error", "Got:",got,"Expected:",expected);
+			} catch (e) {
+			}
+		});
+		
+		benchmarks.push(function () {
+			try {
+			console.info("Eval var and str");
+			
+			_start();
+			
+			var got = $.template("Work{%= a %}hard",{}).html({a: " is "}),
+				 expected = "Work is hard"; 
+			
+			global+=_end();
+			
+			if ( got === expected) {
+				console.log("ok");
+				return 1;
+			} else
+				console.error("error", "Got:",got,"Expected:",expected);
+			} catch (e) {
+			}
+		});
+		
+		benchmarks.push(function () {
+			try {
+			console.info("Functions and eval");
+			
+			_start();
+			
+			var got = $.template("{%@ test(a) {return a+' ok'} %}{%= test(\"I am\") %}",{}).html(),
+					expected = "I am ok";
+			
+			global+=_end();
+			
+			if ( got === expected) {
+				console.log("ok");
+				return 1;
+			} else
+				console.error("error", "Got:",got,"Expected:",expected);
+			} catch (e) {
+			}
+		});
+		
+		benchmarks.push(function () {
+			try {
+			console.info("Scopes");
+			
+			_start();
+			
+			var got = $.template("{% var a = 'not in scope'; %}{%~ var a = 'in scope';%}{%= a %}",{}).html(),
+					expected = "not in scope";
+			
+			global+=_end();
+			
+			if ( got === expected) {
+				console.log("ok");
+				return 1;
+			} else
+				console.error("error", "Got:",got,"Expected:",expected);
+			} catch (e) {
+			}
+		});
+		
+		benchmarks.push(function () {
+			try {
+			console.info("Each method");
+			
+			_start();
+			
+			var got = $.template("{%each a%}{%= this + '-' %}{%/each%}",{}).html({a: [1 , 2 , 3]}),
+				expected = "1-2-3-";
+			
+			global+=_end();
+			
+			if (got === expected) {
+				console.log("ok");
+				return 1;
+			} else
+				console.error("error", "Got:",got,"Expected:",expected);
+			} catch (e) {}
+		});
+		
+		benchmarks.push(function () {
+			try {
+			console.info("Catch method");
+			
+			_start();
+			
+			var got = $.template("{%catch var a%}I am a{%/catch%}{%= a +' char' %}",{}).html(),
+				  expected =  "I am a char";
+			
+			global+=_end();
+			
+			if ( got === expected) {
+				console.log("ok");
+				return 1;
+			} else
+				console.error("error", "Got:",got,"Expected:",expected);
+			} catch (e) {}
+		});
+		
+		benchmarks.push(function () {
+			try {
+			console.info("Naming templates");
+			
+			$.template("test",{},"test");
+			
+			_start();
+			
+			var got = $.template("test").html(),
+				expected = "test";
+			
+			global+=_end();
+			
+			if (got === expected) {
+				console.log("ok");
+				return 1;
+			} else
+				console.error("error", "Got:",got,"Expected:",expected);
+			} catch (e) {}
+		});
+		
+		benchmarks.push(function () {
+			try {
+			console.info("Naming templates with short hand");
+			
+			$.template("<div>test</div>",{},"test");
+			
+			_start();
+			
+			var got = $.template("<div>{%: test {} %} is hard</div>",{})().html(),
+			expected = "<div>test</div> is hard";
+			
+			global+=_end();
+			
+			if (got === expected) {
+				console.log("ok");
+				return 1;
+			} else
+				console.error("error", "Got:",got,"Expected:",expected);
+			} catch (e) {}
+		});
+		
+		benchmarks.push(function () {
+			try {
+			console.info("Nested naming and renaming");
+			
+			_start();
+			
+			$.template("<div>test</div>",{},"test");
+			$.template("<div>{%: test {} %} is hard</div>",{},"kaza");
+			
+			var got = $.template("<div>{%: kaza {} %} so do it</div>",{})().html(),
+				   expected ="<div><div>test</div> is hard</div> so do it";
+				   
+			global+=_end();
+			
+			if ( got === expected) {
+				console.log("ok");
+				return 1;
+			} else
+				console.error("error", "Got:",got,"Expected:",expected);
+				
+			} catch (e) {}
+		});
+		
+		benchmarks.push(function () {
+			console.info("Similar speed test");
+			
+			var inc_g = "1{%= 2%}3",
+				  inc_e = "123",
+				  g="",
+				  e="";
+				
+				for (var i=1;i<1000;i++) {
+					g+=inc_g;
+					e+=inc_e;
+				}
+				
+				if ($.template(g,{}).html() !== e)
+					return;
+				
+				
+				i=100;
+				_start();
+				
+				while (i>0) {
+					$.template(g,{}).html();
+					i--;
+				}
+				
+				i = _end();
+				
+				global += i;
+				
+				console.log("Execution time: ", i ,"ms");
+				return 1;			
+		});
+		
+		benchmarks.push(function () {
+			console.info("Incrementing speed test");
+			
+			var inc_g = "1{%= 2%}3",
+				  inc_e = "123",
+				  g="",
+				  e="",
+				  got;
+				
+				
+				var i = 300;
+				
+				_start();
+				
+				while (i>0) {
+					if (( got = $.template(g+=inc_g,{}).html()) !== (e+=inc_e))
+						return;
+					i--;
+				}
+				
+				i= _end();
+				
+				console.log("Execution time: ", i ,"ms");
+				global += i;
+				return 1;
+			
+		});
+		
+		run(0);
+	</script>
+	<title>jQuery.tpl test case</title>
+</head>
+<body>
+
+</body>
+</html>

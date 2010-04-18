@@ -1,4 +1,4 @@
-/**@license jQuery Tpl plugin v.0.3.17
+/**@license jQuery Tpl plugin v.0.3.18
  ** Copyright 2010, Fedor Indutny 
  ** Released with MIT license
  **/
@@ -137,7 +137,7 @@
 			
 			// If have been cached template
 			// $.template("%template%" , [ ["arg1", ... , "argN"] ], ["name"])
-			if (cache[str]) return cache[str];		
+			if (cache[str]) return namecache[name] = cache[str];		
 			
 			var	compiled,
 					namespace = {
