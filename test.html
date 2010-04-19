@@ -18,7 +18,9 @@
 	<script type="text/javascript" src="jquery.js"></script>
 	<script type="text/javascript" src="jquery.tpl.min.js"></script>
 	<script type="text/javascript">
-		window.console = window.console || {
+		try {console.log()}
+		catch (e) {
+		window.console = {
 			log: function (str) {
 			},
 			error: function () {
@@ -27,6 +29,7 @@
 			info: function (str) {
 			}
 		};
+		}
 		var start, benchmarks=[], global=0;
 		function _start() {
 			start = +new Date;
