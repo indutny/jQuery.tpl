@@ -83,7 +83,7 @@
 			/**
 			*	Generate function replacing pattern %1 in string
 			*	@param {string} str string with pattern
-			*	@return {Function}
+			*	@return {function(string): string}
 			*/
 		function preg_decorate(str) {		
 			/**
@@ -98,7 +98,7 @@
 		/**
 		*	Generate function simply returning obj
 		*	@param {string} obj object to return
-		*	@return {Function}
+		*	@return {function(): string}
 		*/
 		function return_decorate(obj) {
 			/**
@@ -157,7 +157,7 @@
 		* $.template("%template%", {args}, [name]) - generate template and optionally give it a name
 		* Args = optional arguments that can be null
 		* @param {string} str Input template, or template name
-		* @return {Function}
+		* @return {function(object): object}
 		*/
 		$.template = function (str , args, name) {
 			// If have been cached by name
