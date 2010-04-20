@@ -13,15 +13,19 @@
 		// cache
 		var	cache = {},
 				namecache ={},
+				
 				// regexps
-				$brackets = /({%|%})/gm,
+				$brackets = /({%|%})/g,
 				$modificator = /^([^\s]+)(?:\s|$)/,
 				$tabs = /\t/gm,
-				$spaces = /\s+/gm,
+				$spaces = /\s+/g,
 				$decorator = /%1/,
+	
 				// attribute cache
+				$tab = "\t",
 				length = "length",
 				replace = "replace",
+	
 				// functions
 				$push = function (a,$_) {								
 					
@@ -34,6 +38,7 @@
 							// If string - simply put it in stack
 							a;					
 				},
+				
 				// modificators
 				modificators = {
 				
@@ -97,7 +102,7 @@
 			
 			$replace[$replace[length]] = a;
 			
-			return "<b id='_jquery_tpl_"+($replace[length]-1)+"'></b>";
+			return "<br id='_jquery_tpl_"+($replace[length]-1)+"'/>";
 		}
 		
 		// Render template, getting it from object
@@ -133,7 +138,7 @@
 		$.template = function (str , args, name) {
 			// If have been cached by name
 			// $.template("name")
-			if (arguments[length]===1) return namecache[str] || function () {};
+			if (arguments[length] == 1) return namecache[str] || function () {};
 			
 			// If have been cached template
 			// $.template("%template%" , [ ["arg1", ... , "argN"] ], ["name"])
@@ -141,7 +146,11 @@
 			
 			var	compiled,
 					namespace = {
-						$r	:	[]
+						// Storage for replacements
+						$r	:	[],
+						
+						// Add push function
+						$p: $push
 					},
 					// Index
 					i,
@@ -157,13 +166,15 @@
 						return elem || null
 					}
 				);
+				
+			// Add $_ to scope
 			args[args[length]]="$_";
 			
 			// Preprocess template				
 			// Go through each row
 			// And replace it with code
 			compiled = $.map(
-				str[replace]($tabs," ")[replace]($brackets,"\t").split("\t"),
+				str[replace]($tabs," ")[replace]($brackets,$tab).split($tab),
 				function ( elem, i) {
 			
 					if (i%2) {
@@ -180,7 +191,7 @@
 					}
 					
 					// Text
-					if (elem === "")
+					if (!elem)
 						return null;
 					// Push text into namespace as $(var number)
 					namespace["$"+varcount] = elem;				
@@ -202,10 +213,10 @@
 			cache[str] = function (args) {
 				
 				// Get result of wrapper
-				var result = $("<b>"+cache[str].html(args)+"</b>");
+				var result = $("<b>"+cache[str].html(args)+"</b>"), i=namespace.$r.length-1;
 				
 				// For each replacement
-				for (var i in namespace.$r)				
+				for (;i>=0;i--)
 					// Find html element that must be replaced
 					// Place object before, and delete original
 					result.find('#_jquery_tpl_'+i).before(namespace.$r[i]).remove();
@@ -222,9 +233,6 @@
 			cache[str].html = function (args) {
 				// Args can be null
 				args = args || {},
-				
-				// Add push function
-				args.$p = $push;
 				
 				// Append namespace to args
 				$.extend(true, args, namespace);
