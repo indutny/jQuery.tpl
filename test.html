@@ -46,7 +46,7 @@
 			else
 				return done();
 			
-			$('body').append($('<div class="' + (result ? "done": "not") + '">Test # ' + i + '</div>').hide().fadeIn(100,function() {
+			$('body').append($('<div class="' + (result ? "done": "not") + '">Test # ' + i + '</div>').attr({title:benchmarks[ i ].toString()}).hide().fadeIn(100,function() {
 				run(i+1);
 			}));
 			
