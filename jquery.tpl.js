@@ -22,17 +22,21 @@
 				$tab = "\t",
 				length = "length",
 				replace = "replace",
-	
+				
+				// Other
+				gid = 0,
+				
 				// functions
 				/**
 				*	Push object into output
 				*	@param {string|object} a Object to push
 				*	@param {array} $_ Output stack
+				*	@return {string}
 				*/
 				$push = function (a,$_) {								
 					
 					// Push string or object into global output stack
-					$_[$_[length]] =
+					return $_[$_[length]] =
 						(a instanceof $) ?
 							// If a is obj then push it's "ghost"
 							// After, we will replace it with jQuery obj
@@ -174,7 +178,8 @@
 						$r	:	[],
 						
 						// Add push function
-						$p: $push
+						$p: $push,
+						$gid: gid++
 					},
 					// Index
 					i,
@@ -208,7 +213,7 @@
 						( (i = elem.match($modificator)) && ( i.f = modificators[ i[1] ]) ) &&
 							// Use it to translate elem
 							(
-								elem = i.f(elem.substr(i[0][length]))
+								elem = i.f(elem.substr(i[0][length]), namespace)
 							);
 						
 							return elem;
