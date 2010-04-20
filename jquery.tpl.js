@@ -113,7 +113,7 @@
 		}
 		/**
 		*	System function that adds replacement to $r array in namespace ($scope)
-		*	And replaces original element with "<b ..></b>"
+		*	And replaces original element with "<br ../>"
 		*	@param {object} a jQuery object to insert
 		*	@param {array} $replace Array that handles insertions
 		*	@return {string}
