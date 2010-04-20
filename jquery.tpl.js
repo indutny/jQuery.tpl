@@ -27,6 +27,11 @@
 				replace = "replace",
 	
 				// functions
+				/**
+				*	Push object into output
+				*	@param {string|object} a Object to push
+				*	@param {array} $_ Output stack
+				*/
 				$push = function (a,$_) {								
 					
 					// Push string or object into global output stack
@@ -78,26 +83,41 @@
 					/** @return {string} */
 					"/catch" : return_decorate("return $_.join('')})();")
 				};
-		// Generate function replacing pattern %1 in string
-		/** @return {Function} */
+			/**
+			*	Generate function replacing pattern %1 in string
+			*	@param {string} str string with pattern
+			*	@return {Function}
+			*/
 		function preg_decorate(str) {		
-			/** @return {string} */
+			/**
+			* @param {string} s string to insert into str
+			* @return {string}
+			*/
 			return function (s) {
 				return str[replace]($decorator,s,str);
 			};
 		}
 		
-		// Generate function simply returning obj
-		/** @return {Function} */
+		/**
+		*	Generate function simply returning obj
+		*	@param {string} obj object to return
+		*	@return {Function}
+		*/
 		function return_decorate(obj) {
-			
+			/**
+			* @return {string}
+			*/
 			return function() {
 				return obj;
 			}
 		}
-		// System function that adds replacement to $r array in namespace ($scope)
-		// And replaces original element with "<b ..></b>"
-		/** @return {string} */
+		/**
+		*	System function that adds replacement to $r array in namespace ($scope)
+		*	And replaces original element with "<b ..></b>"
+		*	@param {object} a jQuery object to insert
+		*	@param {array} $replace Array that handles insertions
+		*	@return {string}
+		*/
 		function $insert_jQuery(a,$replace) {
 			
 			$replace[$replace[length]] = a;
@@ -105,11 +125,15 @@
 			return "<br id='_jquery_tpl_"+($replace[length]-1)+"'/>";
 		}
 		
-		// Render template, getting it from object
-		// If name is defined - store into namecache
-		// Also you can use this syntax:
-		// $('...').render({arguments});
-		// $('...').render("name");
+		/**
+		* Render template, getting it from object
+		* If name is defined - store into namecache
+		* Also you can use this syntax:
+		* $('...').render({arguments});
+		* $('...').render("name");
+		* @param {string|object} name Template name or arguments
+		* @return {object}
+		*/
 		$.fn.render = function (name, args) {
 			// We can call template without name
 			(!args) &&
@@ -130,11 +154,14 @@
 			return args ? fn(args): $;
 		}
 		
-		// Generate, cache, return template
-		// $.template("name") - get cached template with name
-		// $.template("%template%", {args}, [name]) - generate template and optionally give it a name
-		// Args = optional arguments that can be null
-		/** @return {Function} */
+		/**
+		* Generate, cache, return template
+		* $.template("name") - get cached template with name
+		* $.template("%template%", {args}, [name]) - generate template and optionally give it a name
+		* Args = optional arguments that can be null
+		* @param {string} str Input template, or template name
+		* @return {Function}
+		*/
 		$.template = function (str , args, name) {
 			// If have been cached by name
 			// $.template("name")
@@ -207,9 +234,13 @@
 			// In secure closure
 			i = $eval("[function($args,"+args.join(",")+"){$_=[];with($args){(function(){" + compiled + "})();}return $_.join('');}]");						
 			
-			// Cache wrapper by str key
-			// Replaces <b id="_jquery_tpl_[i]"></b> with "TRUE" jQuery objects
-			// And so it's returning jQuery object
+			/**
+			* Cache wrapper by str key
+			* Replaces <b id="_jquery_tpl_[i]"></b> with "TRUE" jQuery objects
+			* And so it's returning jQuery object
+			* @param {object} args Input arguments
+			* @return {object}
+			*/
 			cache[str] = function (args) {
 				
 				// Get result of wrapper
@@ -228,8 +259,12 @@
 				return result.find('>*');
 			}
 			
-			// And cache it wrapper, that will recreate scope and call original function
-			/** @return {string} */
+			
+			/**
+			*	And cache it wrapper, that will recreate scope and call original function
+			*	@param {object} args arguments to pass
+			*	@return {string}
+			*/
 			cache[str].html = function (args) {
 				// Args can be null
 				args = args || {},
