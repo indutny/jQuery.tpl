@@ -1,101 +1,121 @@
-/**@preserve jQuery.tpl block plugin v.0.0.1;Copyright 2010, Fedor Indutny;Released under MIT license **/
-(function ($,undefined) {
-	var data = {};
+/**@preserve jQuery.tpl block plugin v.0.0.2;Copyright 2010, Fedor Indutny;Released under MIT license **/
+(function ($,undefined,data, length) {
+	data = {};
+	length= "length";
 	
-	function pushStack(gid, name) {
-			console.log('push',gid,name);		
-		data[gid].stack[data[gid].stack.length] = name;
+	function last(arr, key, val, readOnly, cache) {
+	
+		cache = arr[key];
 		
-		return gid;
+		if (val) {
+		
+			if ( !arr[key] )
+				return arr[key] = [val];
+			
+			return cache [ cache[length] ] = val;
+		}
+		
+		if (!cache)
+			return;
+
+		val = cache [ 0 ];
+			
+		 (!readOnly)
+			&& (cache[length] > 1)
+				&& ( arr[key] = arr[key].slice(1) );
+		
+			
+		return val;
 	}
 	
-	function popStack(gid) {		console.log('pop',gid);
-		data[gid].stack.length--;
-	}
+	function lastStack(gid, blocks ,readOnly) {
 	
-	function fromStack(gid, blocks , name) {
-	
-		var stack = blocks,
+		var 
 			  temp = blocks,
+			  stack = data[gid].stack,
 			  i,
-			  len = stack.length;
+			  len = stack[length]-(readOnly ? readOnly : 0);
 		
 		for ( i=0; i<len;i++)
-			temp = temp[ stack[i] ] || {};
+			if (! (temp = last ( temp , stack[i] , undefined, readOnly)))
+				return;
 		
-		return temp[name];
-		
+		return temp;	
 	}
 	
-	function toStack(gid, blocks, name, value) {
-	
-		var stack = blocks,
-			  temp = blocks,
-			  i,
-			  len = stack.length;
-		
-		for ( i=0; i<len;i++)
-			temp = temp[ stack[i] ] || {};
-		
-		temp[name] = value;
-	}
-	
-	function $extends($_,name, args, gid, junk) {
+	function $extends($_,name, args, gid, junk, $this) {
 	
 		data[gid].ext = $.template(name);
-		var $this = this;		
-		$_.join = function () {
+		$this = this;		
+		$_.join = function ($_) {
 			
-			var $_ = [];			console.log(data[gid].args);
+			$_ = [];						
 			$this.$p(data[gid].ext($.extend(true, {$blockStack : data[gid].args}, args)), $_);
-			return Array.prototype.join.apply($_, [""]);
+			
+			init(gid);
+			
+			return Array.prototype.join.call($_, "");
 		}		
 		
 	}
 	
-	function $block($args, $_, name, gid, code) {
-		var args;				console.log('block', $args, name, gid, code);		
-		if (!data[gid].ext) {
-			// If calling from extended template
-			
-			if (!$args.$blockStack || ( ! (args = fromStack(gid , $args.$blockStack,name) ) ) ) 
-				return $args.$p(code,$_);
-			
-			return $args.$p(args,$_);
-		}
+	function $block($args, $_, name, gid, code, args, temp) {
+		temp = data[gid].stack;
+						temp[temp[length]] = name;
+				do {
 		
-		// If calling from extending template
-		toStack(gid, data[gid].args, name, code);
+			if (!data[gid].ext) {
+				// If calling from extended template
+				
+				if (!$args.$blockStack || ( ! (args = lastStack(gid , $args.$blockStack) ) ) )  {
+					$args.$p(code,$_);
+					break;
+				}
+					
+				$args.$p(args,$_);
+				
+				break;
+			}
+			
+			// If calling from extending template
+			last( ($_ = lastStack(gid, data[gid].args, 1)) , name, code );
+		
+		} while(undefined);
+		
+		temp[length]--;
 	}
 	
-	function align(namespace, junk) {
-		if (data[namespace.$gid]) return namespace.$gid;
-		
-		data[namespace.$gid] = {
+	function init(gid, namespace) {
+		data [gid]= {
 			/** @private */
-			namespace : namespace,
+			namespace : namespace || data[gid].namespace,
 			/** @private */
 			stack: [],
 			/** @private */
 			args: {}
 		};
+	}
+	
+	function align(namespace, junk) {
+		if (data[namespace.$gid]) return namespace.$gid;
+		
+		init(namespace.$gid, namespace);
 		
 		$.extend(namespace,{
 			$extends : $extends,
-			$block : $block,			$push_block: pushStack,			$pop_block: popStack
-		});
+			$block : $block		});
 		
 		return namespace.$gid;
 	}
 	
 	$.extend($.template.modificators,{
 		"extends" : function (str , namespace) {
-		
+			str = str.split(" ");
 			return [
 				"$extends($_,",
-				str,
+				str[0],
 				",",
-				"{}",
+				str[1],
 				",",
 				align(namespace),
 				");"
@@ -104,12 +124,12 @@
 		},
 		"block" : function (name , namespace) {
 			
-			return "$push_block("+align(namespace)+","+name+");$block($args,$_," + name + "," +  align(namespace) + ",(function($_){";
+			return "$block($args,$_," + name + "," +  align(namespace) + ",(function($_){";
 			
 		},
 		"/block" : function (junk, namespace) {			
 		
-			return ";return $_.join('')})([]));$pop_block("+align(namespace)+");";			
+			return ";return $_.join('')})([]));";			
 		}
 	});
 })(jQuery);
