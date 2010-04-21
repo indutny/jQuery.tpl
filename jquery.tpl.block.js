@@ -1,56 +1,32 @@
-/**@preserve jQuery.tpl block plugin v.0.0.2;Copyright 2010, Fedor Indutny;Released under MIT license **/
+/**@preserve jQuery.tpl block plugin v.0.0.1;Copyright 2010, Fedor Indutny;Released under MIT license **/
 (function ($,undefined,data, length) {
 	data = {};
 	length= "length";
+	/** @const */
+	var ext = "e";
+	/** @const */
+	var namespace ="n";
+	/** @const */
+	var args =  "a";
 	
-	function last(arr, key, val, readOnly, cache) {
+	function $extends($_,gid,name, argums,  junk, $this) {
 	
-		cache = arr[key];
-		
-		if (val) {
-		
-			if ( !arr[key] )
-				return arr[key] = [val];
-			
-			return cache [ cache[length] ] = val;
-		}
-		
-		if (!cache)
-			return;
-
-		val = cache [ 0 ];
-			
-		 (!readOnly)
-			&& (cache[length] > 1)
-				&& ( arr[key] = arr[key].slice(1) );
-		
-			
-		return val;
-	}
-	
-	function lastStack(gid, blocks ,readOnly) {
-	
-		var 
-			  temp = blocks,
-			  stack = data[gid].stack,
-			  i,
-			  len = stack[length]-(readOnly ? readOnly : 0);
-		
-		for ( i=0; i<len;i++)
-			if (! (temp = last ( temp , stack[i] , undefined, readOnly)))
-				return;
-		
-		return temp;	
-	}
-	
-	function $extends($_,name, args, gid, junk, $this) {
-	
-		data[gid].ext = $.template(name);
+		data[gid][ext] = $.template(name);
 		$this = this;		
 		$_.join = function ($_) {
 			
 			$_ = [];						
-			$this.$p(data[gid].ext($.extend(true, {$blockStack : data[gid].args}, args)), $_);
+			$this.$p(
+				data
+					[gid]
+						[ext](
+							$.extend(
+								true,
+								{$blockStack : data[gid][args]}
+								, argums
+							)
+						)
+			, $_);
 			
 			init(gid);
 			
@@ -59,41 +35,30 @@
 		
 	}
 	
-	function $block($args, $_, name, gid, code, args, temp) {
-		temp = data[gid].stack;
-						temp[temp[length]] = name;
-				do {
-		
-			if (!data[gid].ext) {
-				// If calling from extended template
-				
-				if (!$args.$blockStack || ( ! (args = lastStack(gid , $args.$blockStack) ) ) )  {
-					$args.$p(code,$_);
-					break;
-				}
-					
-				$args.$p(args,$_);
-				
-				break;
-			}
-			
+	function $block($args, $_, name, gid, code, cache) {
+		if (data[gid][ext]) {
 			// If calling from extending template
-			last( ($_ = lastStack(gid, data[gid].args, 1)) , name, code );
+			(cache = data[gid][args][name]) ?
+				(cache[cache[length]] = code([]))
+				:
+				(data[gid][args][name] = [ code([]) ]);
+			
+			return;
+		}
 		
-		} while(undefined);
-		
-		temp[length]--;
+		// If calling from extended template			
+		if ($args.$blockStack && $args.$blockStack[name])
+			(cache = (code = $args.$blockStack[name])[0]) && (code[length]>1) && ($args.$blockStack[name] = code.slice(1));
+		else
+			cache= code([]);
+		$args.$p(cache , $_);	
 	}
 	
 	function init(gid, namespace) {
-		data [gid]= {
-			/** @private */
-			namespace : namespace || data[gid].namespace,
-			/** @private */
-			stack: [],
-			/** @private */
-			args: {}
-		};
+		data [gid] = {};
+		data[gid][args] = {};
+		data [gid][namespace]=namespace || data[gid][namespace];
+		
 	}
 	
 	function align(namespace, junk) {
@@ -110,26 +75,22 @@
 	
 	$.extend($.template.modificators,{
 		"extends" : function (str , namespace) {
-			str = str.split(" ");
 			return [
 				"$extends($_,",
-				str[0],
-				",",
-				str[1],
-				",",
 				align(namespace),
+				",",
+				str,
 				");"
 			].join("");
 			
 		},
 		"block" : function (name , namespace) {
-			
-			return "$block($args,$_," + name + "," +  align(namespace) + ",(function($_){";
+			return "$block($args,$_," + name + "," +  align(namespace) + ",function($_){";
 			
 		},
 		"/block" : function (junk, namespace) {			
 		
-			return ";return $_.join('')})([]));";			
+			return ";return $_.join('')});";			
 		}
 	});
 })(jQuery);
