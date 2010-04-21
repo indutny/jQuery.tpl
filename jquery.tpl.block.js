@@ -12,18 +12,16 @@
 	function $extends($_,gid,name, argums,  junk, $this) {
 	
 		data[gid][ext] = $.template(name);
+		argums = argums || {};
 		$this = this;		
 		$_.join = function ($_) {
 			
-			$_ = [];						
+			$_ = [];			argums.$blockStack = data[gid][args];			
 			$this.$p(
 				data
 					[gid]
 						[ext](
-							$.extend(
-								{$blockStack : data[gid][args]}
-								, argums
-							)
+							argums
 						)
 			, $_);
 			
@@ -65,9 +63,8 @@
 		
 		init(namespace.$gid, namespace);
 		
-		$.extend(namespace,{
-			$extends : $extends,
-			$block : $block		});
+		namespace.$extends = $extends;
+		namespace.$block = $block;
 		
 		return namespace.$gid;
 	}
