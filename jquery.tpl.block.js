@@ -21,7 +21,6 @@
 					[gid]
 						[ext](
 							$.extend(
-								true,
 								{$blockStack : data[gid][args]}
 								, argums
 							)
