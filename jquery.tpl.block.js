@@ -15,17 +15,14 @@
 	var flag = "f";
 	
 	
-	function $extends($_,gid,name, argums) {
+	function $extends($_,gid,name, argums, junk, $this) {
 	
-		var junk, $this;
 		
 		data[gid][ext] = $.template(name);
 		argums = argums || {};
 		$this = this;
 		
 		$_.join = function () {
-			var $_;
-			
 			$_ = [];
 			argums[blockStack] = data[gid][args];			
 			$this.$p(
@@ -43,8 +40,8 @@
 		
 	}
 	
-	function $block(name, gid, code, flag, $_) {
-		var cache=data[gid],$args;
+	function $block(name, gid, code, flag, $_, cache,$args) {
+		cache=data[gid];
 		if (!flag) {
 			$args = cache[cached_args] = this;
 			cache[cached_$_]= $_;
@@ -98,8 +95,9 @@
 			return "$block(" + name + "," + align(namespace) + ",function($_){";
 			
 		},
-		"/block" : function (junk, namespace) {			
-			var gid = align(namespace), store = data[gid][flag];
+		"/block" : function (junk, namespace, gid, store) {			
+			gid = align(namespace);
+			store = data[gid][flag];
 			
 			data[gid][flag] = 1;
 			

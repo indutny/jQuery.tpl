@@ -1,4 +1,4 @@
-/**@preserve jQuery.tpl plugin v.0.4.0;Copyright 2010, Fedor Indutny;Released under MIT license **/
+/**@preserve jQuery.tpl plugin v.0.4.1;Copyright 2010, Fedor Indutny;Released under MIT license **/
 (function(undefined) {
 	/* Escaping closure */
 	/** @return {Function} */
@@ -6,26 +6,7 @@
 		return eval(a)[0];
 	}
  
-	 (function ($) {
-		// cache
-		var	cache = {},
-				namecache ={},
-				
-				// regexps
-				$brackets = /({%|%})/g,
-				$modificator = /^([^\s]+)(?:\s|$)/,
-				$tabs = /\t/gm,
-				$spaces = /\s+/g,
-				$decorator = /%1/,
-	
-				// attribute cache
-				$tab = "\t",
-				length = "length",
-				replace = "replace",
-				
-				// Other
-				gid = 0,
-				
+	 (function ($,$tab,length,replace,gid,cache,namecache,$brackets,$modificator,$tabs,$spaces,$decorator,modificators) {				
 				// functions
 				/**
 				*	Push object into output
@@ -33,7 +14,7 @@
 				*	@param {array} $_ Output stack
 				*	@return {string}
 				*/
-				$push = function (a,$_) {								
+				function $push(a,$_) {								
 					
 					// Push string or object into global output stack
 					return $_[$_[length]] =
@@ -43,7 +24,7 @@
 							$insert_jQuery(a, this.$scope.$r) :
 							// If string - simply put it in stack
 							a;					
-				},
+				};
 				
 				// modificators
 				modificators = {
@@ -67,8 +48,8 @@
 					// Short-hand for templates
 					// Example: {%:templatename {arg1:val1,arg2:val2} %}
 					/** @return {string} */
-					":" : function (str) {
-						var name = str.match($modificator);
+					":" : function (str,name) {
+						name = str.match($modificator);
 						return "$p($.template('"+name[1]+"')(" + str.substr(name[0][length]) + "),$_);";
 					},
 					// Short-hand for each method
@@ -135,14 +116,14 @@
 		* @param {string|object} name Template name or arguments
 		* @return {object}
 		*/
-		$.fn.render = function (name, args) {
+		$.fn.render = function (name, args,fn) {
 			// We can call template without name
 			(!args) &&
 				(typeof name !== "string") &&
 					(args = name) &&
 						(name = undefined);
 					
-			var fn = $.template(
+			fn = $.template(
 				// Code of element = template
 				this.html(),
 				// Variables = classes
@@ -243,10 +224,11 @@
 			* @param {object} args Input arguments
 			* @return {object}
 			*/
-			cache[str] = function (args) {
+			cache[str] = function (args, result, i) {
 				
 				// Get result of wrapper
-				var result = $("<b>"+cache[str].html(args)+"</b>"), i=namespace.$r.length-1;
+				result = $("<b>"+cache[str].html(args)+"</b>");
+				i=namespace.$r.length-1;
 				
 				// For each replacement
 				for (;i>=0;i--)
@@ -291,5 +273,5 @@
 		}
 		// Add modificators to $.template
 		$.template.modificators = modificators;
-	})(jQuery);
+	})(jQuery,"\t","length","replace",0,{},{},/({%|%})/g,/^([^\s]+)(?:\s|$)/,/\t/gm,/\s+/g,/%1/);
 })();
