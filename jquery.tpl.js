@@ -1,4 +1,4 @@
-/**@preserve jQuery.tpl plugin v.0.3.18;Copyright 2010, Fedor Indutny;Released under MIT license **/
+/**@preserve jQuery.tpl plugin v.0.4.0;Copyright 2010, Fedor Indutny;Released under MIT license **/
 (function(undefined) {
 	/* Escaping closure */
 	/** @return {Function} */
