@@ -64,8 +64,8 @@
 		}
 		
 		// If calling from extended template			
-		if ($args[blockStack] && $args[blockStack][name])
-			(cache = (code = $args[blockStack][name])[0]) && (code[length]>1) && ($args[blockStack][name] = code.slice(1));
+		if ((flag = $args[blockStack]) && flag[name])
+			(cache = (code = flag[name])[0]) && (code[length]>1) && (flag[name] = code.slice(1));
 		else
 			cache= code([]);
 		$args.$p(cache , $_);	
