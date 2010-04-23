@@ -1,22 +1,33 @@
 /**@preserve jQuery.tpl block plugin v.0.0.1;Copyright 2010, Fedor Indutny;Released under MIT license **/
-(function ($,undefined,data, length) {
-	data = {};
-	length= "length";
+(function ($,data,length, blockStack, undefined) {
+	
 	/** @const */
 	var ext = "e";
 	/** @const */
 	var namespace ="n";
 	/** @const */
 	var args =  "a";
+	/** @const */
+	var cached_args = "q";
+	/** @const */
+	var cached_$_ = "_";
+	/** @const */
+	var flag = "f";
 	
-	function $extends($_,gid,name, argums,  junk, $this) {
 	
+	function $extends($_,gid,name, argums) {
+	
+		var junk, $this;
+		
 		data[gid][ext] = $.template(name);
 		argums = argums || {};
-		$this = this;		
-		$_.join = function ($_) {
+		$this = this;
+		
+		$_.join = function () {
+			var $_;
 			
-			$_ = [];			argums.$blockStack = data[gid][args];			
+			$_ = [];
+			argums[blockStack] = data[gid][args];			
 			$this.$p(
 				data
 					[gid]
@@ -27,13 +38,22 @@
 			
 			init(gid);
 			
-			return Array.prototype.join.call($_, "");
+			return $_.join("");
 		}		
 		
 	}
 	
-	function $block($args, $_, name, gid, code, cache) {
-		if (data[gid][ext]) {
+	function $block(name, gid, code, flag, $args, $_) {
+		var cache=data[gid];
+		if (!flag) {
+			cache[cached_args] = $args;
+			cache[cached_$_]= $_;
+		} else {
+			$args = cache[cached_args];
+			$_ = cache[cached_$_];		
+		}
+		
+		if (cache[ext]) {
 			// If calling from extending template
 			(cache = data[gid][args][name]) ?
 				(cache[cache[length]] = code([]))
@@ -44,8 +64,8 @@
 		}
 		
 		// If calling from extended template			
-		if ($args.$blockStack && $args.$blockStack[name])
-			(cache = (code = $args.$blockStack[name])[0]) && (code[length]>1) && ($args.$blockStack[name] = code.slice(1));
+		if ($args[blockStack] && $args[blockStack][name])
+			(cache = (code = $args[blockStack][name])[0]) && (code[length]>1) && ($args[blockStack][name] = code.slice(1));
 		else
 			cache= code([]);
 		$args.$p(cache , $_);	
@@ -53,12 +73,12 @@
 	
 	function init(gid, namespace) {
 		data [gid] = {};
-		data[gid][args] = {};
+		data [gid][args] = {};
 		data [gid][namespace]=namespace || data[gid][namespace];
-		
+		data [gid][flag] = 0;
 	}
 	
-	function align(namespace, junk) {
+	function align(namespace) {
 		if (data[namespace.$gid]) return namespace.$gid;
 		
 		init(namespace.$gid, namespace);
@@ -71,22 +91,19 @@
 	
 	$.extend($.template.modificators,{
 		"extends" : function (str , namespace) {
-			return [
-				"$extends($_,",
-				align(namespace),
-				",",
-				str,
-				");"
-			].join("");
-			
+			return "$extends($_," + align(namespace) +	"," + str + ");";			
 		},
 		"block" : function (name , namespace) {
-			return "$block($args,$_," + name + "," +  align(namespace) + ",function($_){";
+			
+			return "$block(" + name + "," + align(namespace) + ",function($_){";
 			
 		},
 		"/block" : function (junk, namespace) {			
-		
-			return ";return $_.join('')});";			
+			var gid = align(namespace), store = data[gid][flag];
+			
+			data[gid][flag] = 1;
+			
+			return ";return $_.join('')},"+store + (store ? ");" : ",$args,$_);");
 		}
 	});
-})(jQuery);
+})(jQuery,{},"length","$blockStack");
