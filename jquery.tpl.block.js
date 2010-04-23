@@ -43,10 +43,10 @@
 		
 	}
 	
-	function $block(name, gid, code, flag, $args, $_) {
-		var cache=data[gid];
+	function $block(name, gid, code, flag, $_) {
+		var cache=data[gid],$args;
 		if (!flag) {
-			cache[cached_args] = $args;
+			$args = cache[cached_args] = this;
 			cache[cached_$_]= $_;
 		} else {
 			$args = cache[cached_args];
@@ -103,7 +103,7 @@
 			
 			data[gid][flag] = 1;
 			
-			return ";return $_.join('')},"+store + (store ? ");" : ",$args,$_);");
+			return ";return $_.join('')},"+store + (store ? ");" : ",$_);");
 		}
 	});
 })(jQuery,{},"length","$blockStack");
