@@ -1,5 +1,11 @@
 /**@preserve jQuery.tpl plugin v.0.5.0;Copyright 2010, Fedor Indutny;Released under MIT license **/
-(function(undefined) {
+/**
+* Note that there're some core changes:
+* All variables that you want to use in template must be defined in second argument of $.template or in className of element(if using $.render)
+* If you pass variable, that's not defined before - it will be available only as $args.varName
+* This is because of speed of execution of "with" method (no compiler optimizations)
+*/
+(function($ , undefined) {
 
 	/** Escaping closure
 	 * Only global variables will be available here
@@ -9,7 +15,9 @@
 		return eval(a)[0];
 	}
  
-	 (function ($,$tab,length,replace,gid,cache,namecache,$brackets,$modificator,$tabs,$spaces,$decorator,modificators) {				
+	 (function ($tab , length , replace , gid ,
+	                cache , namecache , $brackets , $modificator ,
+					$tabs , $spaces , $decorator , modificators) {				
 				// Built-in functions
 				/**
 				*	Push object into output
@@ -51,9 +59,11 @@
 					// Short-hand for templates
 					// Example: {%:templatename {arg1:val1,arg2:val2} %}
 					/** @return {string} */
-					":" : function (str,name) {
+					":" : function (str , name) {
+					
 						name = str.match($modificator);
-						return "$p($.template('"+name[1]+"')(" + str.substr(name[0][length]) + "),$_,$r);";
+						
+						return "$p($.template('" + name[1] + "')(" + str.substr(name[0][length]) + "),$_,$r);";
 					},
 					
 					// "if", "else", "elseif"
@@ -94,7 +104,7 @@
 			* @return {string}
 			*/
 			return function (s) {
-				return str[replace]($decorator,s,str);
+				return str[replace]($decorator , s , str);
 			};
 		}
 		
@@ -119,11 +129,11 @@
 		*	@param {array} $replace Array that handles insertions
 		*	@return {string}
 		*/
-		function $insert_jQuery(a,$replace) {
+		function $insert_jQuery(a , $replace) {
 			
-			$replace[$replace[length]] = a;
+			$replace[ $replace[length] ] = a;
 			
-			return "<br id='_jquery_tpl_"+($replace[length]-1)+"'/>";
+			return "<br id='_jquery_tpl_" + ($replace[length]-1) + "'/>";
 		}
 		
 		/**
@@ -146,7 +156,7 @@
 				// Code of element = template
 				this.html(),
 				// Variables = classes
-				this[0].className.split($spaces),
+				this[0] ? this[0].className.split($spaces) : [],
 				name
 			);
 			
@@ -166,11 +176,13 @@
 		$.template = function (str , args, name) {
 			// If have been cached by name
 			// $.template("name")
-			if (arguments[length] == 1) return namecache[str] || function () {};
+			if (arguments[length] == 1)
+				return namecache[str] || function () {};
 			
 			// If have been cached template
 			// $.template("%template%" , [ ["arg1", ... , "argN"] ], ["name"])
-			if (cache[str]) return namecache[name] = cache[str];		
+			if (cache[str])
+				return namecache[name] = cache[str];		
 			
 			var	compiled,
 					namespace = {
@@ -183,6 +195,7 @@
 					// Var count
 					varcount = 0;				
 					
+			//	Should be deprecated?
 			// Args can be undefined
 			// Delete null elements
 			args = 
@@ -194,13 +207,16 @@
 				);
 				
 			// Add $_ to scope
-			args[args[length]]="$_";
+			args[ args[length] ]="$_";
 			
 			// Preprocess template				
 			// Go through each row
 			// And replace it with code
 			compiled = $.map(
-				str[replace]($tabs," ")[replace]($brackets,$tab).split($tab),
+				str
+					[replace]($tabs , " ")
+						[replace]($brackets , $tab)
+							.split($tab),
 				function ( elem, i) {
 			
 					if (i%2) {
@@ -219,11 +235,12 @@
 					// Text
 					if (!elem)
 						return null;
+						
 					// Push text into namespace as $(var number)
-					namespace[ (args[args.length] = "$" + varcount) ] = elem;
+					namespace[ (args[ args[length] ] = "$" + varcount) ] = elem;
 					
 					// So, instead of inline printing we will print variable
-					return "$p($"+(varcount++)+",$_,$r);";				
+					return "$p($" + ( varcount++ ) + ",$_,$r);";				
 					
 							
 				}
@@ -232,7 +249,7 @@
 			
 			// Create function with overdriven args
 			// In secure closure
-			i = $eval("[function($args,$p,$r,"+args.join(",")+"){$_=[];" + compiled + ";return $_.join('');}]");						
+			i = $eval("[function($args,$p,$r," + args.join(",") + "){$_=[];" + compiled + ";return $_.join('');}]");						
 			
 			/**
 			* Cache wrapper by str key
@@ -244,14 +261,17 @@
 			cache[str] = function (args, result, i) {
 				
 				// Get result of wrapper
-				result = $("<b>"+cache[str].html(args)+"</b>");
-				i=namespace.$r.length-1;
+				result = $("<b>" + cache[str].html(args) + "</b>");
 				
-				// For each replacement
-				for (;i>=0;i--)
+				// For each replacement				
+				for (i = namespace.$r[length] - 1;i>=0;i--)
+				
 					// Find html element that must be replaced
 					// Place object before, and delete original
-					result.find('#_jquery_tpl_'+i).before(namespace.$r[i]).remove();
+					result
+						.find('#_jquery_tpl_' + i)
+							.before( namespace.$r[i] )
+								.remove();
 				
 				// Clean replacements, because they are in main namespace
 				namespace.$r = [];
@@ -268,10 +288,10 @@
 			*/
 			function createArguments(callArgs,result,i) {
 			
-				result = [callArgs,$push,namespace.$r];
+				result = [ callArgs , $push , namespace.$r ];
 				
 				for (i in args)					
-					result[result[length]] = callArgs[args[i]];
+					result[ result[length] ] = callArgs[ args[i] ];
 				
 				return result;
 				
@@ -294,7 +314,7 @@
 				callArgs.$scope = namespace;
 				
 				// Return result of execution				
-				return i.apply(undefined,createArguments( callArgs));
+				return i.apply(undefined , createArguments( callArgs ));
 			}
 			
 			// If name is defined
@@ -310,5 +330,7 @@
 		$.template.modificators = modificators;
 		
 		// Constants and cache
-	})(jQuery , "\t" , "length" , "replace" , 0 , {} , {} , /({%|%})/g , /^([^\s]+)(?:\s|$)/ , /\t/gm , /\s+/g , /%1/);
-})();
+	})( "\t" , "length" , "replace" , 0 ,
+	     {} , {} , /({%|%})/g , /^([^\s]+)(?:\s|$)/ ,
+		 /\t/gm , /\s+/g , /%1/);
+})(jQuery);
