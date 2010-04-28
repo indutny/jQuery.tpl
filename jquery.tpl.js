@@ -81,7 +81,7 @@
 					// Short-hand for each method
 					// Example: {%each arr%}<div>{%=this%}</div>{%/each%}
 					/** @return {string} */
-					"each": preg_decorate("$.each(%1,function(){"),
+					"each": preg_decorate("$.each(%1,function($i){"),
 					/** @return {string} */
 					"/each": return_decorate("});"),
 					
