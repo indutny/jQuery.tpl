@@ -147,7 +147,7 @@
 		* Generate, cache, return template
 		* $.template("name") - get cached template with name
 		* $.template("%template%", {args}, [name]) - generate template and optionally give it a name
-		* Args = optional arguments that can be null
+		* Args = Template arguments
 		* @param {string} str Input template, or template name
 		* @return {function(object): object}
 		*/
@@ -208,8 +208,7 @@
 					if (!elem)
 						return null;
 					// Push text into namespace as $(var number)
-					namespace["$"+varcount] = elem;
-					args[args.length] = "$"+varcount;
+					namespace[ (args[args.length] = "$" + varcount) ] = elem;
 					
 					// So, instead of inline printing we will print variable
 					return "$p($"+(varcount++)+",$_,$r);";				
@@ -251,18 +250,19 @@
 			
 			/**
 			* Generate arguments array that will be passed to template function
-			* @param {array} defArguments Default arguments that was passed on creation
+			* @param {array} args Default arguments that was passed on creation
 			* @param {object} callArgs Arguments that will be used now
 			* @return {array}
 			*/
-			function createArguments(defArguments, callArgs,result,i) {
+			function createArguments(callArgs,result,i) {
+			
 				result = [callArgs,$push,namespace.$r];
 				
-				for (i in defArguments)					
-					result[result[length]] = callArgs[defArguments[i]];
+				for (i in args)					
+					result[result[length]] = callArgs[args[i]];
 				
+				return result;
 				
-				return result
 			}
 			
 			
@@ -277,12 +277,12 @@
 				
 				// Append namespace to args
 				$.extend(true, callArgs, namespace);
-				namespace.x = namespace.x++ || 1;
+				
 				// Attach permament scope to namespace	
 				callArgs.$scope = namespace;
 				
 				// Return result of execution				
-				return i.apply(undefined,createArguments(args, callArgs));
+				return i.apply(undefined,createArguments( callArgs));
 			}
 			
 			// If name is defined
