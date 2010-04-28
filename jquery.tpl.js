@@ -1,13 +1,16 @@
 /**@preserve jQuery.tpl plugin v.0.5.0;Copyright 2010, Fedor Indutny;Released under MIT license **/
 (function(undefined) {
-	/* Escaping closure */
-	/** @return {Function} */
+
+	/** Escaping closure
+	 * Only global variables will be available here
+	 * @return {Function}
+	 */
 	function $eval(a) {
 		return eval(a)[0];
 	}
  
 	 (function ($,$tab,length,replace,gid,cache,namecache,$brackets,$modificator,$tabs,$spaces,$decorator,modificators) {				
-				// functions
+				// Built-in functions
 				/**
 				*	Push object into output
 				*	@param {string|object} a Object to push
@@ -26,7 +29,7 @@
 							a;					
 				};
 				
-				// modificators
+				// Modificators
 				modificators = {
 				
 					// Direct output
@@ -52,12 +55,18 @@
 						name = str.match($modificator);
 						return "$p($.template('"+name[1]+"')(" + str.substr(name[0][length]) + "),$_,$r);";
 					},
-					// If, else
+					
+					// "if", "else", "elseif"
 					// Example: {%if true%}I'm right!{%else%}I'm wrong{%/if%}
 					// {%if false%}I'm wrong{%elseif true%}I'm true!{%/if%}
+					/** @return {string} */
 					"if": preg_decorate("if(%1){"),
+					/** @return {string} */
 					"else": return_decorate("}else{"),
+					/** @return {string} */
 					"elseif": preg_decorate("}else if(%1){"),
+					/** @return {string} */
+					
 					"/if": return_decorate("}"),					
 					// Short-hand for each method
 					// Example: {%each arr%}<div>{%=this%}</div>{%/each%}
@@ -65,6 +74,7 @@
 					"each": preg_decorate("$.each(%1,function(){"),
 					/** @return {string} */
 					"/each": return_decorate("});"),
+					
 					// Catch
 					// Example: {%catch var a%}<div></div>{%/catch%}{%= a%}
 					/** @return {string} */
@@ -72,6 +82,7 @@
 					/** @return {string} */
 					"/catch" : return_decorate("return $_.join('')})();")
 				};
+				
 			/**
 			*	Generate function replacing pattern %1 in string
 			*	@param {string} str string with pattern
@@ -100,6 +111,7 @@
 				return obj;
 			}
 		}
+		
 		/**
 		*	System function that adds replacement to $r array in namespace ($scope)
 		*	And replaces original element with "<br ../>"
@@ -286,14 +298,17 @@
 			}
 			
 			// If name is defined
-			if (name)
+			name &&
 				// Add to name cache
-				namecache[name] = cache[str];
+				(namecache[name] = cache[str]);
 			
 			// Return wrapper
 			return cache[str];
 		}
+		
 		// Add modificators to $.template
 		$.template.modificators = modificators;
-	})(jQuery,"\t","length","replace",0,{},{},/({%|%})/g,/^([^\s]+)(?:\s|$)/,/\t/gm,/\s+/g,/%1/);
+		
+		// Constants and cache
+	})(jQuery , "\t" , "length" , "replace" , 0 , {} , {} , /({%|%})/g , /^([^\s]+)(?:\s|$)/ , /\t/gm , /\s+/g , /%1/);
 })();
