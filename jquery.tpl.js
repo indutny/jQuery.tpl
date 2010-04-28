@@ -124,7 +124,7 @@
 		
 		/**
 		*	System function that adds replacement to $r array in namespace ($scope)
-		*	And replaces original element with "<br ../>"
+		*	And replaces original element with "<b ../>"
 		*	@param {object} a jQuery object to insert
 		*	@param {array} $replace Array that handles insertions
 		*	@return {string}
@@ -133,7 +133,7 @@
 			
 			$replace[ $replace[length] ] = a;
 			
-			return "<br id='_jquery_tpl_" + ($replace[length]-1) + "'/>";
+			return "<b id='_jquery_tpl_" + ($replace[length]-1) + "'/>";
 		}
 		
 		/**
@@ -145,7 +145,8 @@
 		* @param {string|object} name Template name or arguments
 		* @return {object}
 		*/
-		$.fn.render = function (name, args,fn) {
+		$.fn.render = function (name, args,fn, $this) {
+			$this = this;
 			// We can call template without name
 			(!args) &&
 				(typeof name !== "string") &&
@@ -154,9 +155,9 @@
 					
 			fn = $.template(
 				// Code of element = template
-				this.html(),
+				$this.html(),
 				// Variables = classes
-				this[0] ? this[0].className.split($spaces) : [],
+				$this[0] ? $this[0].className.split($spaces) : [],
 				name
 			);
 			
@@ -188,6 +189,7 @@
 					namespace = {
 						// Storage for replacements
 						$r	:	[],
+						// Global template Id, may be used by plugins
 						$gid: gid++
 					},
 					// Index
@@ -332,5 +334,5 @@
 		// Constants and cache
 	})( "\t" , "length" , "replace" , 0 ,
 	     {} , {} , /({%|%})/g , /^([^\s]+)(?:\s|$)/ ,
-		 /\t/gm , /\s+/g , /%1/);
+		 /\t/g , /\s+/g , /%1/);
 })(jQuery);
