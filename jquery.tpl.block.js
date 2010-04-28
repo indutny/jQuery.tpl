@@ -1,4 +1,4 @@
-/**@preserve jQuery.tpl block plugin v.0.0.1;Copyright 2010, Fedor Indutny;Released under MIT license **/
+/**@preserve jQuery.tpl block plugin v.0.1;Copyright 2010, Fedor Indutny;Released under MIT license **/
 /**
 * @param{array} data internal storage with gid as key
 */
@@ -16,6 +16,11 @@
 	var cached_$_ = "_";
 	/** @const */
 	var flag = "f";
+	/** @const */
+	var cached_$r = "r";
+	/** @const */
+	var cached_$p = "p";
+	
 	
 	/**
 	* This function will be called everytime with {%extends ... %} statement
@@ -24,14 +29,14 @@
 	* @param{string} name name of template to extend
 	* @param{object} argums argument that will be passed to template with block values
 	*/
-	function $extends($_ , gid , name , argums , junk , $this) {
+	function $extends($_ , $r, $p, gid , name , argums , junk) {
 	
 		// Store template into internal storage
 		data[gid][ext] = $.template(name);
 		
 		// Preprocess and prepare
 		argums = argums || {};
-		$this = this;
+		
 		
 		// Change standart join function in output stack array
 		// So when output will be created this function will be called
@@ -45,13 +50,13 @@
 			
 			// Call cached template with arguments
 			// And store output into $_ (it will be jQuery object)
-			$this.$p(
+			$p(
 				data
 					[gid]
 						[ext](
 							argums
 						)
-			, $_);
+			, $_, $r);
 			
 			
 			// Clear storage on this gid
@@ -71,7 +76,7 @@
 	* @param{int} flag Is that first call of this function
 	* @param{arary} $_ Output stack of template
 	*/
-	function $block(name, gid, code, flag, $_, cache,$args) {
+	function $block(name, gid, code, flag, $args, $_, $r, $p, cache) {
 		// Get data storage for gid
 		cache=data[gid];
 		
@@ -79,12 +84,16 @@
 		if (!flag) {
 		
 			// Cache arguments and stack into storage
-			$args = cache[cached_args] = this;
+			cache[cached_args] = $args;
 			cache[cached_$_]= $_;
+			cache[cached_$r] = $r;
+			cache[cached_$p] = $p;
 		} else {
 			// If not - get from cache
 			$args = cache[cached_args];
 			$_ = cache[cached_$_];		
+			$r = cache[cached_$r];
+			$p = cache[cached_$p];
 		}
 		
 		// If we are just passing block values to template
@@ -112,7 +121,7 @@
 			cache= code([]);
 			
 		// And send it all to the output stack
-		$args.$p(cache , $_);	
+		$p(cache , $_,$r);	
 	}
 	
 	/**
@@ -133,7 +142,7 @@
 	* @return{int}
 	*/
 	function align(namespace) {
-	
+		
 		// If allready is in local storage
 		// Return gid
 		if (data[namespace.$gid]) return namespace.$gid;
@@ -143,7 +152,9 @@
 		
 		// Add default functions
 		namespace.$extends = $extends;
-		namespace.$block = $block;
+		namespace.$block = $block;		
+		
+		
 		
 		// Return gid
 		return namespace.$gid;
@@ -152,13 +163,13 @@
 	// Add modificators
 	$.extend($.template.modificators,{
 		"extends" : function (str , namespace) {
-		
-			return "$extends($_," + align(namespace) +	"," + str + ");";			
+			
+			return "$args.$scope.$extends($_,$r,$p," + align(namespace) +	"," + str + ");";			
 			
 		},
 		"block" : function (name , namespace) {
 			
-			return "$block(" + name + "," + align(namespace) + ",function($_){";
+			return "$args.$scope.$block(" + name + "," + align(namespace) + ",function($_){";
 			
 		},
 		"/block" : function (junk, namespace, gid, store) {			
@@ -168,7 +179,7 @@
 			// Mark first time traveling
 			data[gid][flag] = 1;
 			
-			return ";return $_.join('')},"+store + (store ? ");" : ",$_);");
+			return ";return $_.join('')},"+store + (store ? ");" : ",$args,$_,$r,$p);");
 			
 		}
 	});

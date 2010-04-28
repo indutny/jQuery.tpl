@@ -1,4 +1,4 @@
-/**@preserve jQuery.tpl plugin v.0.4.2;Copyright 2010, Fedor Indutny;Released under MIT license **/
+/**@preserve jQuery.tpl plugin v.0.5.0;Copyright 2010, Fedor Indutny;Released under MIT license **/
 (function(undefined) {
 	/* Escaping closure */
 	/** @return {Function} */
@@ -14,14 +14,14 @@
 				*	@param {array} $_ Output stack
 				*	@return {string}
 				*/
-				function $push(a,$_) {								
+				function $push(a,$_,$r) {								
 					
 					// Push string or object into global output stack
 					return $_[$_[length]] =
 						(a instanceof $) ?
 							// If a is obj then push it's "ghost"
 							// After, we will replace it with jQuery obj
-							$insert_jQuery(a, this.$scope.$r) :
+							$insert_jQuery(a, $r) :
 							// If string - simply put it in stack
 							a;					
 				};
@@ -33,7 +33,7 @@
 					// Can handle jQuery object!
 					// Example: {%= "hello world" %}
 					/** @return {string} */
-					"="	:	preg_decorate("$p(%1,$_);"),					
+					"="	:	preg_decorate("$p(%1,$_,$r);"),					
 					
 					// Short-hand for functions
 					// Example: {%@ log() {console && console.log.apply(this,arguments);} %}
@@ -50,7 +50,7 @@
 					/** @return {string} */
 					":" : function (str,name) {
 						name = str.match($modificator);
-						return "$p($.template('"+name[1]+"')(" + str.substr(name[0][length]) + "),$_);";
+						return "$p($.template('"+name[1]+"')(" + str.substr(name[0][length]) + "),$_,$r);";
 					},
 					// If, else
 					// Example: {%if true%}I'm right!{%else%}I'm wrong{%/if%}
@@ -164,9 +164,6 @@
 					namespace = {
 						// Storage for replacements
 						$r	:	[],
-						
-						// Add push function
-						$p: $push,
 						$gid: gid++
 					},
 					// Index
@@ -211,9 +208,11 @@
 					if (!elem)
 						return null;
 					// Push text into namespace as $(var number)
-					namespace["$"+varcount] = elem;				
+					namespace["$"+varcount] = elem;
+					args[args.length] = "$"+varcount;
+					
 					// So, instead of inline printing we will print variable
-					return "$p($"+(varcount++)+",$_);";				
+					return "$p($"+(varcount++)+",$_,$r);";				
 					
 							
 				}
@@ -222,7 +221,7 @@
 			
 			// Create function with overdriven args
 			// In secure closure
-			i = $eval("[function($args,"+args.join(",")+"){$_=[];with($args){(function(){" + compiled + "})();}return $_.join('');}]");						
+			i = $eval("[function($args,$p,$r,"+args.join(",")+"){$_=[];" + compiled + ";return $_.join('');}]");						
 			
 			/**
 			* Cache wrapper by str key
@@ -250,24 +249,40 @@
 				return result.find('>*');
 			}
 			
+			/**
+			* Generate arguments array that will be passed to template function
+			* @param {array} defArguments Default arguments that was passed on creation
+			* @param {object} callArgs Arguments that will be used now
+			* @return {array}
+			*/
+			function createArguments(defArguments, callArgs,result,i) {
+				result = [callArgs,$push,namespace.$r];
+				
+				for (i in defArguments)					
+					result[result[length]] = callArgs[defArguments[i]];
+				
+				
+				return result
+			}
+			
 			
 			/**
 			*	And cache it wrapper, that will recreate scope and call original function
 			*	@param {object} args arguments to pass
 			*	@return {string}
 			*/
-			cache[str].html = function (args) {
+			cache[str].html = function (callArgs) {
 				// Args can be null
-				args = args || {},
+				callArgs = callArgs || {},
 				
 				// Append namespace to args
-				$.extend(true, args, namespace);
-				
+				$.extend(true, callArgs, namespace);
+				namespace.x = namespace.x++ || 1;
 				// Attach permament scope to namespace	
-				args.$scope = namespace;
+				callArgs.$scope = namespace;
 				
 				// Return result of execution				
-				return i(args);
+				return i.apply(undefined,createArguments(args, callArgs));
 			}
 			
 			// If name is defined

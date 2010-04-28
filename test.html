@@ -132,7 +132,7 @@
 			
 			_start();
 			
-			var got = $.template("{%= a %}",{}).html({a:"Only eval variable"}),
+			var got = $.template("{%= a %}",["a"]).html({a:"Only eval variable"}),
 				  expected = "Only eval variable";
 			
 			global+=_end();
@@ -172,7 +172,7 @@
 			
 			_start();
 			
-			var got = $.template("Work{%= a %}hard",{}).html({a: " is "}),
+			var got = $.template("Work{%= a %}hard",["a"]).html({a: " is "}),
 				 expected = "Work is hard"; 
 			
 			global+=_end();
@@ -292,7 +292,7 @@
 			
 			_start();
 			
-			var got = $.template("{%each a%}{%= this + '-' %}{%/each%}",{}).html({a: [1 , 2 , 3]}),
+			var got = $.template("{%each a%}{%= this + '-' %}{%/each%}",["a"]).html({a: [1 , 2 , 3]}),
 				expected = "1-2-3-";
 			
 			global+=_end();
@@ -675,7 +675,7 @@
 				console.info("Three repeated blocks with three attachments and passed vars");
 				_start();
 				
-				$.template("<div>{%= x%}{%block 'a'%}2{%/block%}3{%block 'a'%}4{%/block%}5{%block 'a'%}6{%/block%}{%= x%}</div>",{},"a");
+				$.template("<div>{%= x%}{%block 'a'%}2{%/block%}3{%block 'a'%}4{%/block%}5{%block 'a'%}6{%/block%}{%= x%}</div>",["x"],"a");
 				
 				var got = $.template("{%extends 'a',{x : '#'}%}{%block 'a'%}_{%/block%}{%block 'a'%}-{%/block%}",{})().html(),
 					expected = "#_3-5-#";
