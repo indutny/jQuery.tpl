@@ -185,6 +185,66 @@
 			} catch (e) {
 			}
 		});
+
+		benchmarks.push(function () {
+			try {
+			console.info("Simple if");
+			
+			_start();
+			
+			var got = $.template("{%if true%}I am ok{%/if%}",{}).html(),
+					expected = "I am ok";
+			
+			global+=_end();
+			
+			if ( got === expected) {
+				console.log("ok");
+				return 1;
+			} else
+				console.error("error", "Got:",got,"Expected:",expected);
+			} catch (e) {
+			}
+		});
+		
+		benchmarks.push(function () {
+			try {
+			console.info("If with else");
+			
+			_start();
+			
+			var got = $.template("{%if false%}I am not ok{%else%}I am ok{%/if%}",{}).html(),
+					expected = "I am ok";
+			
+			global+=_end();
+			
+			if ( got === expected) {
+				console.log("ok");
+				return 1;
+			} else
+				console.error("error", "Got:",got,"Expected:",expected);
+			} catch (e) {
+			}
+		});
+		
+		benchmarks.push(function () {
+			try {
+			console.info("If with elseif");
+			
+			_start();
+			
+			var got = $.template("{%if false%}I am not ok{%elseif true%}I am ok{%/if%}",{}).html(),
+					expected = "I am ok";
+			
+			global+=_end();
+			
+			if ( got === expected) {
+				console.log("ok");
+				return 1;
+			} else
+				console.error("error", "Got:",got,"Expected:",expected);
+			} catch (e) {
+			}
+		});
 		
 		benchmarks.push(function () {
 			try {

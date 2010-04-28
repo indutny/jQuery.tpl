@@ -1,4 +1,4 @@
-/**@preserve jQuery.tpl plugin v.0.4.1;Copyright 2010, Fedor Indutny;Released under MIT license **/
+/**@preserve jQuery.tpl plugin v.0.4.2;Copyright 2010, Fedor Indutny;Released under MIT license **/
 (function(undefined) {
 	/* Escaping closure */
 	/** @return {Function} */
@@ -52,6 +52,13 @@
 						name = str.match($modificator);
 						return "$p($.template('"+name[1]+"')(" + str.substr(name[0][length]) + "),$_);";
 					},
+					// If, else
+					// Example: {%if true%}I'm right!{%else%}I'm wrong{%/if%}
+					// {%if false%}I'm wrong{%elseif true%}I'm true!{%/if%}
+					"if": preg_decorate("if(%1){"),
+					"else": return_decorate("}else{"),
+					"elseif": preg_decorate("}else if(%1){"),
+					"/if": return_decorate("}"),					
 					// Short-hand for each method
 					// Example: {%each arr%}<div>{%=this%}</div>{%/each%}
 					/** @return {string} */
