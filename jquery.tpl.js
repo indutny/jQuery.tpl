@@ -4,8 +4,6 @@
 * All variables that you want to use in template must be defined in second argument of $.template or in className of element(if using $.render)
 * If you pass variable, that's not defined before - it will be available only as $args.varName
 * This is because of speed of execution of "with" method (no compiler optimizations)
-* 
-* Moved to github
 */
 (function($ , undefined) {
 
@@ -17,9 +15,19 @@
 		return eval(a)[0];
 	}
  
-	 (function ($tab , length , replace , gid ,
+	 (function ($tab , gid ,
 	                cache , namecache , $brackets , $modificator ,
 					$tabs , $spaces , $decorator , modificators) {				
+					
+				function map(arr, call) {
+					if (arr.map)
+						return arr.map(call);
+						
+					for (var i=arr.length;i>0;i--)
+						arr[i] = call(arr[i],i);
+					
+					return arr;
+				}
 				// Built-in functions
 				/**
 				*	Push object into output
@@ -30,7 +38,7 @@
 				function $push(a,$_,$r) {								
 					
 					// Push string or object into global output stack
-					return $_[$_[length]] =
+					return $_[$_.length] =
 						(a instanceof $) ?
 							// If a is obj then push it's "ghost"
 							// After, we will replace it with jQuery obj
@@ -65,7 +73,7 @@
 					
 						name = str.match($modificator);
 						
-						return "$p($.template('" + name[1] + "')(" + str.substr(name[0][length]) + "),$_,$r);";
+						return "$p($.template('" + name[1] + "')(" + str.substr(name[0].length) + "),$_,$r);";
 					},
 					
 					// "if", "else", "elseif"
@@ -106,7 +114,7 @@
 			* @return {string}
 			*/
 			return function (s) {
-				return str[replace]($decorator , s , str);
+				return str.replace($decorator , s , str);
 			};
 		}
 		
@@ -133,9 +141,9 @@
 		*/
 		function $insert_jQuery(a , $replace) {
 			
-			$replace[ $replace[length] ] = a;
+			$replace[ $replace.length ] = a;
 			
-			return "<b id='_jquery_tpl_" + ($replace[length]-1) + "'/>";
+			return "<b id='_jquery_tpl_" + ($replace.length-1) + "'/>";
 		}
 		
 		/**
@@ -179,7 +187,7 @@
 		$.template = function (str , args, name) {
 			// If have been cached by name
 			// $.template("name")
-			if (arguments[length] == 1)
+			if (arguments.length == 1)
 				return namecache[str] || function () {};
 			
 			// If have been cached template
@@ -197,29 +205,21 @@
 					// Index
 					i,
 					// Var count
-					varcount = 0;				
+					varcount = 0;							
 					
-			//	Should be deprecated?
-			// Args can be undefined
-			// Delete null elements
-			args = 
-				$.map(
-					args || [] ,
-					function(elem) {
-						return elem || null
-					}
-				);
-				
 			// Add $_ to scope
-			args[ args[length] ]="$_";
+			// And check that args is array
+			( args instanceof Array) ? (args[ args.length ]="$_") : (args = ["$_"]);
+			
+			
 			
 			// Preprocess template				
 			// Go through each row
 			// And replace it with code
-			compiled = $.map(
+			compiled = map(
 				str
-					[replace]($tabs , " ")
-						[replace]($brackets , $tab)
+					.replace($tabs , " ")
+						.replace($brackets , $tab)
 							.split($tab),
 				function ( elem, i) {
 			
@@ -230,7 +230,7 @@
 						( (i = elem.match($modificator)) && ( i.f = modificators[ i[1] ]) ) &&
 							// Use it to translate elem
 							(
-								elem = i.f(elem.substr(i[0][length]), namespace)
+								elem = i.f(elem.substr(i[0].length), namespace)
 							);
 						
 							return elem;
@@ -241,7 +241,7 @@
 						return null;
 						
 					// Push text into namespace as $(var number)
-					namespace[ (args[ args[length] ] = "$" + varcount) ] = elem;
+					namespace[ (args[ args.length ] = "$" + varcount) ] = elem;
 					
 					// So, instead of inline printing we will print variable
 					return "$p($" + ( varcount++ ) + ",$_,$r);";				
@@ -251,6 +251,7 @@
 			// Then join all rows
 			).join("");
 			
+	
 			// Create function with overdriven args
 			// In secure closure
 			i = $eval("[function($args,$p,$r," + args.join(",") + "){$_=[];" + compiled + ";return $_.join('');}]");						
@@ -268,7 +269,7 @@
 				result = $("<b>" + cache[str].html(args) + "</b>");
 				
 				// For each replacement				
-				for (i = namespace.$r[length] - 1;i>=0;i--)
+				for (i = namespace.$r.length - 1;i>=0;i--)
 				
 					// Find html element that must be replaced
 					// Place object before, and delete original
@@ -295,7 +296,7 @@
 				result = [ callArgs , $push , namespace.$r ];
 				
 				for (i in args)					
-					result[ result[length] ] = callArgs[ args[i] ];
+					result[ result.length ] = callArgs[ args[i] ];
 				
 				return result;
 				
@@ -334,7 +335,7 @@
 		$.template.modificators = modificators;
 		
 		// Constants and cache
-	})( "\t" , "length" , "replace" , 0 ,
+	})( "\t" ,  0 ,
 	     {} , {} , /({%|%})/g , /^([^\s]+)(?:\s|$)/ ,
 		 /\t/g , /\s+/g , /%1/);
 })(jQuery);

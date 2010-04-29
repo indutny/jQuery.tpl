@@ -2,7 +2,7 @@
 /**
 * @param{array} data internal storage with gid as key
 */
-(function ($ , data , length , blockStack , undefined) {
+(function ($ , data ,  blockStack , undefined) {
 	
 	/** @const */
 	var ext = "e";
@@ -102,7 +102,7 @@
 			// Collect them to local storage
 			// Then we will call template passing this like arguments
 			(cache = data[gid][args][name]) ?
-				(cache[cache[length]] = code([]))
+				(cache[cache.length] = code([]))
 				:
 				(data[gid][args][name] = [ code([]) ]);
 			
@@ -115,7 +115,7 @@
 		if ((flag = $args[blockStack]) && flag[name])
 		
 			// Get first value and slice array
-			(cache = (code = flag[name])[0]) && (code[length]>1) && (flag[name] = code.slice(1));
+			(cache = (code = flag[name])[0]) && (code.length>1) && (flag[name] = code.slice(1));
 		else
 			// Simply get source
 			cache= code([]);
@@ -185,4 +185,4 @@
 	});
 	
 	// Pass some constants
-})(jQuery,{},"length","$blockStack");
+})(jQuery,{},"$blockStack");
