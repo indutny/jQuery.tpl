@@ -313,7 +313,7 @@
 				return 1;
 			} else
 				console.error("error", "Got:",got,"Expected:",expected);
-			} catch (e) {}
+			} catch (e) {console.log(e);}
 		});
 		
 		benchmarks.push(function () {
@@ -332,7 +332,9 @@
 				return 1;
 			} else
 				console.error("error", "Got:",got,"Expected:",expected);
-			} catch (e) {}
+			} catch (e) {
+			console.log(e);
+			}
 		});
 		
 		benchmarks.push(function () {
@@ -353,7 +355,9 @@
 				return 1;
 			} else
 				console.error("error", "Got:",got,"Expected:",expected);
-			} catch (e) {}
+			} catch (e) {
+				console.log(e);
+			}
 		});
 		
 		benchmarks.push(function () {
@@ -374,7 +378,9 @@
 				return 1;
 			} else
 				console.error("error", "Got:",got,"Expected:",expected);
-			} catch (e) {}
+			} catch (e) {
+				console.log(e);
+			}
 		});
 		
 		benchmarks.push(function () {
@@ -397,7 +403,9 @@
 			} else
 				console.error("error", "Got:",got,"Expected:",expected);
 				
-			} catch (e) {}
+			} catch (e) {
+				console.log(e);
+			}
 		});
 		
 		benchmarks.push(function () {

@@ -3,6 +3,10 @@ It's easy to learn - start now!
 
 ==Basic examples:
 	
+	$.template("1 + 1 = {%= 1+1 %}")
+		.html();
+	// 1 + 1 = 2
+	
 	$.template("Hello {%= a %}!",["a"])
 		.html({a: 'World'});
 	// >> Hello World!
@@ -17,7 +21,7 @@ It's easy to learn - start now!
 	
 ==Medium examples:
 
-	$.template("{%catch var a %}What's up, dude?{%/catch%}  {%= a.substr(0,9) %}?",[])
+	$.template("{%catch var a %}What's up, dude?{%/catch%}  {%= a.substr(0,9) %}?")
 		.html();
 	// >> What's up?
 	
@@ -25,7 +29,30 @@ It's easy to learn - start now!
 		.html();
 	// >> 'a' is false?
 	
-	$.template("{%@ name(value) { return '~' + value + '~' } %}{%= name('fancy')%}",[])
+	$.template("{%@ name(value) { return '~' + value + '~' } %}{%= name('fancy')%}")
 		.html()
 	// >>~fancy~
 	
+==Harder examples:
+	
+	$.template("<div></div>")();
+	// >> jQuery object of "div"
+	
+	$.template("<div></div>",[],"name"); // Store this template by "name"
+	$.template("name")();
+	// >> jQuery object of "div" again
+	
+	$.template("<button>{%= value%}</button>",["value"],"input");
+	$.template("{%: input {value:'Hello world!'} %}")();
+	// >> Button with text "Hello world!"
+	
+	$.template("{%catch var temp%}<button>{%= value%}</button>{%/catch%}\
+			{%= $(temp).click(function(){alert(msg)}) %}",["value","msg"],"input");
+	$.template("{%: input {value:'Hello world!', msg: 'Alarm!'} %}")();
+	// >> Button with text "Hello world!" and alerting "Alarm!" on click
+	
+==Block module
+
+	$.template("<div>Hello, {%block 'username'%}{%/block%}!</div>",[],"block");
+	$.template("{%extends 'block'%}{%block 'username'%}Admin{%/block%}")().html();
+	// >> Hello, Admin!

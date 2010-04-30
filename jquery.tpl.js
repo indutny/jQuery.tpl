@@ -187,13 +187,13 @@
 		$.template = function (str , args, name) {
 			// If have been cached by name
 			// $.template("name")
-			if (arguments.length == 1)
-				return namecache[str] || function () {};
+			if ((arguments.length == 1) && (i = namecache[str]))
+				return i;
 			
 			// If have been cached template
 			// $.template("%template%" , [ ["arg1", ... , "argN"] ], ["name"])
-			if (cache[str])
-				return namecache[name] = cache[str];		
+			if ((i = cache[str]) && (i = i[conv_args = (args+"") ]))
+				return namecache[name] = i;
 			
 			var	compiled,
 					namespace = {
@@ -202,8 +202,12 @@
 						// Global template Id, may be used by plugins
 						$gid: gid++
 					},
+					local,
 					// Index
 					i,
+					// Args converted to string
+					// Need them for caching
+					conv_args,
 					// Var count
 					varcount = 0;							
 					
@@ -263,10 +267,11 @@
 			* @param {object} args Input arguments
 			* @return {object}
 			*/
-			cache[str] = function (args, result, i) {
+			
+			local = (cache[str] = cache[str] || {} )[conv_args] = function (args, result, i) {
 				
 				// Get result of wrapper
-				result = $("<b>" + cache[str].html(args) + "</b>");
+				result = $("<b>" + local.html(args) + "</b>");
 				
 				// For each replacement				
 				for (i = namespace.$r.length - 1;i>=0;i--)
@@ -308,7 +313,7 @@
 			*	@param {object} args arguments to pass
 			*	@return {string}
 			*/
-			cache[str].html = function (callArgs) {
+			local.html = function (callArgs) {
 				// Args can be null
 				callArgs = callArgs || {},
 				
@@ -325,10 +330,10 @@
 			// If name is defined
 			name &&
 				// Add to name cache
-				(namecache[name] = cache[str]);
+				(namecache[name] = local);
 			
 			// Return wrapper
-			return cache[str];
+			return local;
 		}
 		
 		// Add modificators to $.template
