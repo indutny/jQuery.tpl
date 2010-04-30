@@ -3,12 +3,29 @@ It's easy to learn - start now!
 
 ==Basic examples:
 	
-	$.template("Hello {%= a %}!",["a"]).html({a: 'World'}); // Hello World!
-	$.template("Hello {%each a%}{%= this %}, {%/each%}world!",["a"]).html({a: ['Andy','Alex']}); // Hello Andy, Alex, World!
-	$.template("{%if godmode%}My Lord!{%else%}Who are you?{%/if%}",["godmode"]).html({godmode: true}); // My Lord!
+	$.template("Hello {%= a %}!",["a"])
+		.html({a: 'World'});
+	// >> Hello World!
+	
+	$.template("Hello {%each a%}{%= this %}, {%/each%}world!",["a"])
+		.html({a: ['Andy','Alex']});
+	// >>  Hello Andy, Alex, World!
+	
+	$.template("{%if godmode%}My Lord!{%else%}Who are you?{%/if%}",["godmode"])
+		.html({godmode: true});
+	// >> My Lord!
 	
 ==Medium examples:
 
-	$.template("{%catch var a %}What's up, dude?{%/catch%}  {%= a.substr(0,9) %}?",[]).html(); // What's up?
-	$.template("{%~ var a = true; %}{%if !a %}'a' is false?{%/if%}",["a"]).html(); // 'a' is false?
-	$.template("{%@ name(value) { return '~' + value + '~' } %}{%= name('fancy')%}",[]).html() // ~fancy~
+	$.template("{%catch var a %}What's up, dude?{%/catch%}  {%= a.substr(0,9) %}?",[])
+		.html();
+	// >> What's up?
+	
+	$.template("{%~ var a = true; %}{%if !a %}'a' is false?{%/if%}",["a"])
+		.html();
+	// >> 'a' is false?
+	
+	$.template("{%@ name(value) { return '~' + value + '~' } %}{%= name('fancy')%}",[])
+		.html()
+	// >>~fancy~
+	
