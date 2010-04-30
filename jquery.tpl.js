@@ -23,7 +23,7 @@
 					if (arr.map)
 						return arr.map(call);
 						
-					for (var i=arr.length;i>0;i--)
+					for (var i=arr.length-1;i>=0;i--)
 						arr[i] = call(arr[i],i);
 					
 					return arr;

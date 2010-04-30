@@ -17,7 +17,7 @@
 	</style>
 	<script type="text/javascript" src="jquery.js"></script>
 	<script type="text/javascript" src="jquery.tpl.min.js"></script>
-	<script type="text/javascript" src="jquery.tpl.block.min.js"></script>
+	<script type="text/javascript" src="jquery.tpl.block.js"></script>
 	<script type="text/javascript">
 		//************************************ Settings
 	
@@ -540,7 +540,7 @@
 				console.info("Three different blocks and single attachment");
 				_start();
 				
-				$.template("<div>1{%block 'a'%}2<{%/block%}3{%block 'b'%}4{%/block%}5{%block 'c'%}6{%/block%}7</div>",{},"a");
+				$.template("<div>1{%block 'a'%}2<{%/block%}3{%block 'b'%}4{%/block%}5{%block 'c'%}6{%/block%}7</div>",[],"a");
 				
 				var got = $.template("{%extends 'a'%}{%block 'a'%}A{%/block%}",{})().html(),
 					expected = "1A34567";
