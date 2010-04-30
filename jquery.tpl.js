@@ -216,7 +216,7 @@
 			// Preprocess template				
 			// Go through each row
 			// And replace it with code
-			compiled = map(
+			compiled = str ? map(
 				str
 					.replace($tabs , " ")
 						.replace($brackets , $tab)
@@ -249,7 +249,7 @@
 							
 				}
 			// Then join all rows
-			).join("");
+			).join("") : "";
 			
 	
 			// Create function with overdriven args
