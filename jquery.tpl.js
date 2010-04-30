@@ -167,7 +167,7 @@
 				// Code of element = template
 				$this.html(),
 				// Variables = classes
-				$this[0] ? $this[0].className.split($spaces) : [],
+				($this[0]&&($this = $this[0].className)) ? $this.split($spaces) : [],
 				name
 			);
 			
