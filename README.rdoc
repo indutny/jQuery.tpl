@@ -1,0 +1,1 @@
+=jQuery.tpl project: simple, fast and powerfull templates for jQuery and javascript.
