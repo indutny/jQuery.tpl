@@ -24,7 +24,7 @@
 						return arr.map(call);
 						
 					for (var i=0 , len = arr.length ; i<len ; i++)
-						arr[i] = call(arr[i],i);
+						arr[i] = call(arr[i] , i);
 					
 					return arr;
 				}
