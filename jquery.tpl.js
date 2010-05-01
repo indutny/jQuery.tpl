@@ -242,7 +242,7 @@
 					
 					// Text
 					if (!elem)
-						return null;
+						return "";
 						
 					// Push text into namespace as $(var number)
 					namespace[ (args[ args.length ] = "$" + varcount) ] = elem;
