@@ -35,8 +35,7 @@
 		data[gid][ext] = $.template(name);
 		
 		// Preprocess and prepare
-		argums = argums || {};
-		
+		argums = argums || {};		
 		
 		// Change standart join function in output stack array
 		// So when output will be created this function will be called

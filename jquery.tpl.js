@@ -1,4 +1,4 @@
-/**@preserve jQuery.tpl plugin v.0.5.2;Copyright 2010, Fedor Indutny;Released under MIT license **/
+/**@preserve jQuery.tpl plugin v.0.5.3;Copyright 2010, Fedor Indutny;Released under MIT license **/
 /**
 * Note that there're some core changes:
 * All variables that you want to use in template must be defined in second argument of $.template or in className of element(if using $.render)
