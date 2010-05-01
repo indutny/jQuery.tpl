@@ -192,7 +192,7 @@
 			
 			// If have been cached template
 			// $.template("%template%" , [ ["arg1", ... , "argN"] ], ["name"])
-			if ((i = cache[str]) && (i = i[conv_args = (args+"") ]))
+			if ( i = cache[cache_name = (str + $tab + args)] )
 				return namecache[name] = i;
 			
 			var	compiled,
@@ -207,7 +207,7 @@
 					i,
 					// Args converted to string
 					// Need them for caching
-					conv_args,
+					cache_name,
 					// Var count
 					varcount = 0;							
 					
@@ -268,7 +268,7 @@
 			* @return {object}
 			*/
 			
-			local = (cache[str] = cache[str] || {} )[conv_args] = function (args, result, i) {
+			local = cache[cache_name] = function (args, result, i) {
 				
 				// Get result of wrapper
 				result = $("<b>" + local.html(args) + "</b>");

@@ -24,7 +24,7 @@
 		var $testBlock = 1;
 		
 		//************************************ Settings - end
-		try {console.log()}
+		try {console.log();}
 		catch (e) {
 		window.console = {
 			log: function (str) {
@@ -36,6 +36,7 @@
 			}
 		};
 		}
+		
 		var start, benchmarks=[], global=0;
 		function _start() {
 			start = +new Date;
@@ -149,6 +150,30 @@
 				console.log(e);
 			}
 		});
+
+		benchmarks.push(function () {
+			try {
+			console.info("Arguments cache");
+			
+			_start();
+			
+			$.template("{%= a %}",[]);
+			
+			var got = $.template("{%= a %}",["a"]).html({a:"Only eval variable"}),
+				  expected = "Only eval variable";
+			
+			global+=_end();
+			
+			if (got === expected) {
+				console.log("ok");
+				return 1;
+			} else
+				console.error("error", "Got:",got,"Expected:",expected);
+			} catch (e) {
+				console.log(e);
+			}
+		});
+
 		
 		benchmarks.push(function () {
 			try {
