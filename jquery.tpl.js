@@ -12,7 +12,7 @@
 	 * @return {Function}
 	 */
 	function $eval(a) {
-		return eval(a)[0];
+		return eval(a);
 	}
  
 	 (function ($tab , gid ,
@@ -258,7 +258,7 @@
 	
 			// Create function with overdriven args
 			// In secure closure
-			i = $eval("[function($scope,$args,$p,$r," + args.join(",") + "){$_=[];" + compiled + ";return $_.join('');}]");						
+			i = $eval("(function($scope,$args,$p,$r," + args.join(",") + "){$_=[];" + compiled + ";return $_.join('')})");						
 			
 			/**
 			* Cache wrapper by str key
