@@ -1,4 +1,4 @@
-/**@preserve jQuery.tpl block plugin v.0.1;Copyright 2010, Fedor Indutny;Released under MIT license **/
+/**@preserve jQuery.tpl block plugin v.0.2;Copyright 2010, Fedor Indutny;Released under MIT license **/
 /**
 * @param{array} data internal storage with gid as key
 */
@@ -81,8 +81,7 @@
 		cache=data[gid];
 		
 		// If we're here first time (during current run of template)
-		if (!flag) {
-		
+		if (!flag) {			
 			// Cache arguments and stack into storage
 			cache[cached_args] = $args;
 			cache[cached_$_]= $_;
@@ -108,12 +107,10 @@
 			
 			// Stop
 			return;
-		}
-		
+		}		
 		// Wow, some template want to pass us some arguments
-		// Really?
-		if ((flag = $args[blockStack]) && flag[name])
-		
+		// Really?				
+		if ( (flag = $args[blockStack]) && flag[name] )		
 			// Get first value and slice array
 			(cache = (code = flag[name])[0]) && (code.length>1) && (flag[name] = code.slice(1));
 		else
@@ -154,8 +151,6 @@
 		namespace.$extends = $extends;
 		namespace.$block = $block;		
 		
-		
-		
 		// Return gid
 		return namespace.$gid;
 	}
@@ -164,20 +159,21 @@
 	$.extend($.template.modificators,{
 		"extends" : function (str , namespace) {
 			
-			return "$args.$scope.$extends($_,$r,$p," + align(namespace) +	"," + str + ");";			
+			return "$scope.$extends($_,$r,$p," + align(namespace) +	"," + str + ");";			
 			
 		},
 		"block" : function (name , namespace) {
 			
-			return "$args.$scope.$block(" + name + "," + align(namespace) + ",function($_){";
+			return "$scope.$block(" + name + "," + align(namespace) + ",function($_){";
 			
 		},
-		"/block" : function (junk, namespace, gid, store) {			
-		
+		"/block" : function (junk, namespace, gid, store) {						
 			gid = align(namespace);
-			store = data[gid][flag];
+			
+			
 			// Mark first time traveling
-			data[gid][flag] = 1;
+			store = data[ gid ][ flag ] ? 1 : 0;					
+			data[ gid ][ flag ] = 1;
 			
 			return ";return $_.join('')},"+store + (store ? ");" : ",$args,$_,$r,$p);");
 			

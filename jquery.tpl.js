@@ -1,4 +1,4 @@
-/**@preserve jQuery.tpl plugin v.0.5.1;Copyright 2010, Fedor Indutny;Released under MIT license **/
+/**@preserve jQuery.tpl plugin v.0.5.2;Copyright 2010, Fedor Indutny;Released under MIT license **/
 /**
 * Note that there're some core changes:
 * All variables that you want to use in template must be defined in second argument of $.template or in className of element(if using $.render)
@@ -23,7 +23,7 @@
 					if (arr.map)
 						return arr.map(call);
 						
-					for (var i=arr.length-1;i>=0;i--)
+					for (var i=0 , len = arr.length ; i<len ; i++)
 						arr[i] = call(arr[i],i);
 					
 					return arr;
@@ -258,7 +258,7 @@
 	
 			// Create function with overdriven args
 			// In secure closure
-			i = $eval("[function($args,$p,$r," + args.join(",") + "){$_=[];" + compiled + ";return $_.join('');}]");						
+			i = $eval("[function($scope,$args,$p,$r," + args.join(",") + "){$_=[];" + compiled + ";return $_.join('');}]");						
 			
 			/**
 			* Cache wrapper by str key
@@ -298,7 +298,7 @@
 			*/
 			function createArguments(callArgs,result,i) {
 			
-				result = [ callArgs , $push , namespace.$r ];
+				result = [ namespace, callArgs , $push , namespace.$r ];
 				
 				for (i in args)					
 					result[ result.length ] = callArgs[ args[i] ];
@@ -321,7 +321,6 @@
 				$.extend(true, callArgs, namespace);
 				
 				// Attach permament scope to namespace	
-				callArgs.$scope = namespace;
 				
 				// Return result of execution				
 				return i.apply(undefined , createArguments( callArgs ));
