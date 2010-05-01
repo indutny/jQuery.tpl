@@ -168,11 +168,9 @@
 			
 		},
 		"/block" : function (junk, namespace, gid, store) {						
-			gid = align(namespace);
-			
 			
 			// Mark first time traveling
-			store = data[ gid ][ flag ] ? 1 : 0;					
+			store = data[ gid = align(namespace) ][ flag ];					
 			data[ gid ][ flag ] = 1;
 			
 			return ";return $_.join('')},"+store + (store ? ");" : ",$args,$_,$r,$p);");
