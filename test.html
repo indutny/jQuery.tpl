@@ -18,10 +18,13 @@
 	<script type="text/javascript" src="jquery.js"></script>
 	<script type="text/javascript" src="jquery.tpl.js"></script>
 	<script type="text/javascript" src="jquery.tpl.block.js"></script>
+	<script type="text/javascript" src="jquery.tpl.filter.js"></script>
+	
 	<script type="text/javascript">
 		//************************************ Settings
 	
 		var $testBlock = 1;
+		var $testFilter = 1;
 		
 		//************************************ Settings - end
 		try {console.log();}
@@ -834,6 +837,129 @@
 					
 					console.log("Execution time: ", i ,"ms");
 					return 1;			
+			});
+		}
+		
+		if ($testFilter) {
+			benchmarks.push(function () {
+				try {
+				console.info("Testing jquery.filter.js");
+				console.info("Simple");
+				_start();
+				
+				var got = $.template("0{%filter nop%}123{%/filter%}4",{}).html(),
+					expected = "01234";
+				
+				global+=_end();
+				
+				if (got === expected) {
+					console.log("ok");
+					return 1;
+				} else
+					console.error("error", "Got:",got,"Expected:",expected);
+				} catch (e) {
+				console.error(e);
+				}
+			});
+			
+			benchmarks.push(function () {
+				try {
+				console.info("Escape");
+				_start();
+				
+				var got = $.template("0{%filter escape%}:{%/filter%}1",{}).html(),
+					expected = "0%3A1";
+				
+				global+=_end();
+				
+				if (got === expected) {
+					console.log("ok");
+					return 1;
+				} else
+					console.error("error", "Got:",got,"Expected:",expected);
+				} catch (e) {
+				console.error(e);
+				}
+			});
+			
+			benchmarks.push(function () {
+				try {
+				console.info("Safe");
+				_start();
+				
+				var got = $.template("0{%filter safe%}<>&\"'{%/filter%}1",{}).html(),
+					expected = "0&lt;&gt;&amp;&quot;&#039;1";
+				
+				global+=_end();
+				
+				if (got === expected) {
+					console.log("ok");
+					return 1;
+				} else
+					console.error("error", "Got:",got,"Expected:",expected);
+				} catch (e) {
+				console.error(e);
+				}
+			});
+			
+			benchmarks.push(function () {
+				try {
+				console.info("Upper");
+				_start();
+				
+				var got = $.template("0{%filter upper%}abc{%/filter%}1",{}).html(),
+					expected = "0ABC1";
+				
+				global+=_end();
+				
+				if (got === expected) {
+					console.log("ok");
+					return 1;
+				} else
+					console.error("error", "Got:",got,"Expected:",expected);
+				} catch (e) {
+				console.error(e);
+				}
+			});
+			
+			benchmarks.push(function () {
+				try {
+				console.info("Lower");
+				_start();
+				
+				var got = $.template("0{%filter lower%}ABC{%/filter%}1",{}).html(),
+					expected = "0abc1";
+				
+				global+=_end();
+				
+				if (got === expected) {
+					console.log("ok");
+					return 1;
+				} else
+					console.error("error", "Got:",got,"Expected:",expected);
+				} catch (e) {
+				console.error(e);
+				}
+			});
+			
+			benchmarks.push(function () {
+				try {
+				console.info("Hierarchical");
+				_start();
+				
+				var got = $.template("0{%filter escape%}{%filter safe%}<>{%/filter%}{%/filter%}1",{}).html(),
+					expected = "0%26lt%3B%26gt%3B1";
+				
+				global+=_end();
+				
+				if (got === expected) {
+					console.log("ok");
+					return 1;
+				} else
+					console.error("error", "Got:",got,"Expected:",expected);
+				} catch (e) {
+				console.error(e);
+				}
 			});
 		}
 		
