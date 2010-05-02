@@ -1,4 +1,3 @@
-/**@preserve jQuery.tpl block plugin v.0.2;Copyright 2010, Fedor Indutny;Released under MIT license **/
 /**
 * @param{array} data internal storage with gid as key
 */
@@ -29,7 +28,7 @@
 	* @param{string} name name of template to extend
 	* @param{object} argums argument that will be passed to template with block values
 	*/
-	function $extends($_ , $r, $p, gid , name , argums , junk) {
+	function $extends($_ , $r, $p, gid , name , argums) {
 	
 		// Store template into internal storage
 		data[gid][ext] = $.template(name);
@@ -107,6 +106,7 @@
 			// Stop
 			return;
 		}		
+		
 		// Wow, some template want to pass us some arguments
 		// Really?				
 		if ( (flag = $args[blockStack]) && flag[name] )		
@@ -178,4 +178,4 @@
 	});
 	
 	// Pass some constants
-})(jQuery,{},"$blockStack");
+})(jQuery,{},"$blockStack");/**@preserve jQuery.tpl block plugin v.0.2;Copyright 2010, Fedor Indutny;Released under MIT license **/
