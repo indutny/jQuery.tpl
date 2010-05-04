@@ -280,8 +280,16 @@
 			*/
 			function createArguments(callArgs,result,i) {
 				
+				// Store local copy of $r (replacement array)
 				var $r = namespace.$r;
 				
+				/** There're some predefined arguments such as:
+				* $scope = namespace,
+				* $args = callArgs,
+				* $p = function
+				*
+				* $p is pushing function, declared here to have access to $r variable
+				*/
 				result = [ namespace, callArgs , function (a,$_) {
 					
 					// Push string or object into global output stack
