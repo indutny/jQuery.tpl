@@ -24,5 +24,5 @@
 		$("<div>" + (overall /  iterations ) + " ms</div>").appendTo('body');
 	}
 	
-	benchmark(1E2);
+	benchmark(1E4);
 })();

@@ -1,3 +1,4 @@
+/**@preserve jQuery.tpl plugin v.0.5.2;Copyright 2010, Fedor Indutny;Released under MIT license **/
 /**
 * Note that there're some core changes:
 * All variables that you want to use in template must be defined in second argument of $.template or in className of element(if using $.render)
@@ -11,7 +12,7 @@
 	 * @return {Function}
 	 */
 	function $eval(a) {
-		return eval(a);
+		return eval(a)[0];
 	}
  
 	 (function ($tab , gid ,
@@ -23,11 +24,28 @@
 						return arr.map(call);
 						
 					for (var i=0 , len = arr.length ; i<len ; i++)
-						arr[i] = call(arr[i] , i);
+						arr[i] = call(arr[i],i);
 					
 					return arr;
 				}
-				// Built-in functions				
+				// Built-in functions
+				/**
+				*	Push object into output
+				*	@param {string|object} a Object to push
+				*	@param {array} $_ Output stack
+				*	@return {string}
+				*/
+				function $push(a,$_,$r) {								
+					
+					// Push string or object into global output stack
+					return $_[$_.length] =
+						(a instanceof $) ?
+							// If a is obj then push it's "ghost"
+							// After, we will replace it with jQuery obj
+							$insert_jQuery(a, $r) :
+							// If string - simply put it in stack
+							a;					
+				};
 				
 				// Modificators
 				modificators = {
@@ -36,7 +54,7 @@
 					// Can handle jQuery object!
 					// Example: {%= "hello world" %}
 					/** @return {string} */
-					"="	:	preg_decorate("$p(%1,$_);"),					
+					"="	:	preg_decorate("$p(%1,$_,$r);"),					
 					
 					// Short-hand for functions
 					// Example: {%@ log() {console && console.log.apply(this,arguments);} %}
@@ -55,13 +73,13 @@
 					
 						name = str.match($modificator);
 						
-						return "$p($.template('" + name[1] + "')(" + str.substr(name[0].length) + "),$_);";
+						return "$p($.template('" + name[1] + "')(" + str.substr(name[0].length) + "),$_,$r);";
 					},
 					
 					// "if", "else", "elseif"
 					// Example: {%if true%}I'm right!{%else%}I'm wrong{%/if%}
 					// {%if false%}I'm wrong{%elseif true%}I'm true!{%/if%}
-					/** @ret\urn {string} */
+					/** @return {string} */
 					"if": preg_decorate("if(%1){"),
 					/** @return {string} */
 					"else": return_decorate("}else{"),
@@ -174,7 +192,7 @@
 			
 			// If have been cached template
 			// $.template("%template%" , [ ["arg1", ... , "argN"] ], ["name"])
-			if ( i = cache[cache_name = (str + $tab + args)] )
+			if ((i = cache[str]) && (i = i[conv_args = (args+"") ]))
 				return namecache[name] = i;
 			
 			var	compiled,
@@ -189,14 +207,16 @@
 					i,
 					// Args converted to string
 					// Need them for caching
-					cache_name,
+					conv_args,
 					// Var count
 					varcount = 0;							
 					
 			// Add $_ to scope
 			// And check that args is array
 			( args instanceof Array) ? (args[ args.length ]="$_") : (args = ["$_"]);
-						
+			
+			
+			
 			// Preprocess template				
 			// Go through each row
 			// And replace it with code
@@ -228,7 +248,7 @@
 					namespace[ (args[ args.length ] = "$" + varcount) ] = elem;
 					
 					// So, instead of inline printing we will print variable
-					return "$p($" + ( varcount++ ) + ",$_);";				
+					return "$p($" + ( varcount++ ) + ",$_,$r);";				
 					
 							
 				}
@@ -238,7 +258,7 @@
 	
 			// Create function with overdriven args
 			// In secure closure
-			i = $eval("(function($scope,$args,$p," + args.join(",") + "){$_=[];" + compiled + ";return $_.join('')})");						
+			i = $eval("[function($scope,$args,$p,$r," + args.join(",") + "){$_=[];" + compiled + ";return $_.join('');}]");						
 			
 			/**
 			* Cache wrapper by str key
@@ -248,7 +268,7 @@
 			* @return {object}
 			*/
 			
-			local = cache[cache_name] = function (args, result, i) {
+			local = (cache[str] = cache[str] || {} )[conv_args] = function (args, result, i) {
 				
 				// Get result of wrapper
 				result = $("<b>" + local.html(args) + "</b>");
@@ -277,21 +297,8 @@
 			* @return {array}
 			*/
 			function createArguments(callArgs,result,i) {
-				
-				var $r = namespace.$r;
-				
-				result = [ namespace, callArgs , function (a,$_) {
-					
-					// Push string or object into global output stack
-					return $_[$_.length] =
-						(a instanceof $) ?
-							// If a is obj then push it's "ghost"
-							// After, we will replace it with jQuery obj
-							$insert_jQuery(a, $r) :
-							// If string - simply put it in stack
-							a;					
-							
-				} ];
+			
+				result = [ namespace, callArgs , $push , namespace.$r ];
 				
 				for (i in args)					
 					result[ result.length ] = callArgs[ args[i] ];
@@ -333,6 +340,6 @@
 		
 		// Constants and cache
 	})( "\t" ,  0 ,
-	     {} , {} , /{%|%}/g , /^([^\s]+)(?:\s|$)/ ,
+	     {} , {} , /{%|%}/g , /^([^\s]+|=)(?:\s|$)/ ,
 		 /\t/g , /\s+/g , /%1/);
-})(jQuery);/**@preserve jQuery.tpl plugin v.0.5.3;Copyright 2010, Fedor Indutny;Released under MIT license **/
+})(jQuery);
