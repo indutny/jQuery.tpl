@@ -318,12 +318,11 @@
 			*/
 			local.html = function (callArgs) {
 				// Args can be null
-				callArgs = callArgs || {},
-				
-				// Append namespace to args
-				$.extend(true, callArgs, namespace);
-				
-				// Attach permament scope to namespace	
+				callArgs = callArgs || {};				
+
+				// Extend callArgs with namespace
+				for ( name in namespace )
+					callArgs[name] = namespace[name];
 				
 				// Return result of execution				
 				return i.apply(undefined , createArguments( callArgs ));
