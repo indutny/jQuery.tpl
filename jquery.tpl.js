@@ -27,24 +27,7 @@
 					
 					return arr;
 				}
-				// Built-in functions
-				/**
-				*	Push object into output
-				*	@param {string|object} a Object to push
-				*	@param {array} $_ Output stack
-				*	@return {string}
-				*/
-				function $push(a,$_,$r) {								
-					
-					// Push string or object into global output stack
-					return $_[$_.length] =
-						(a instanceof $) ?
-							// If a is obj then push it's "ghost"
-							// After, we will replace it with jQuery obj
-							$insert_jQuery(a, $r) :
-							// If string - simply put it in stack
-							a;					
-				};
+				// Built-in functions				
 				
 				// Modificators
 				modificators = {
@@ -53,7 +36,7 @@
 					// Can handle jQuery object!
 					// Example: {%= "hello world" %}
 					/** @return {string} */
-					"="	:	preg_decorate("$p(%1,$_,$r);"),					
+					"="	:	preg_decorate("$p(%1,$_);"),					
 					
 					// Short-hand for functions
 					// Example: {%@ log() {console && console.log.apply(this,arguments);} %}
@@ -72,13 +55,13 @@
 					
 						name = str.match($modificator);
 						
-						return "$p($.template('" + name[1] + "')(" + str.substr(name[0].length) + "),$_,$r);";
+						return "$p($.template('" + name[1] + "')(" + str.substr(name[0].length) + "),$_);";
 					},
 					
 					// "if", "else", "elseif"
 					// Example: {%if true%}I'm right!{%else%}I'm wrong{%/if%}
 					// {%if false%}I'm wrong{%elseif true%}I'm true!{%/if%}
-					/** @return {string} */
+					/** @ret\urn {string} */
 					"if": preg_decorate("if(%1){"),
 					/** @return {string} */
 					"else": return_decorate("}else{"),
@@ -245,7 +228,7 @@
 					namespace[ (args[ args.length ] = "$" + varcount) ] = elem;
 					
 					// So, instead of inline printing we will print variable
-					return "$p($" + ( varcount++ ) + ",$_,$r);";				
+					return "$p($" + ( varcount++ ) + ",$_);";				
 					
 							
 				}
@@ -255,7 +238,7 @@
 	
 			// Create function with overdriven args
 			// In secure closure
-			i = $eval("(function($scope,$args,$p,$r," + args.join(",") + "){$_=[];" + compiled + ";return $_.join('')})");						
+			i = $eval("(function($scope,$args,$p," + args.join(",") + "){$_=[];" + compiled + ";return $_.join('')})");						
 			
 			/**
 			* Cache wrapper by str key
@@ -294,8 +277,21 @@
 			* @return {array}
 			*/
 			function createArguments(callArgs,result,i) {
-			
-				result = [ namespace, callArgs , $push , namespace.$r ];
+				
+				var $r = namespace.$r;
+				
+				result = [ namespace, callArgs , function (a,$_) {
+					
+					// Push string or object into global output stack
+					return $_[$_.length] =
+						(a instanceof $) ?
+							// If a is obj then push it's "ghost"
+							// After, we will replace it with jQuery obj
+							$insert_jQuery(a, $r) :
+							// If string - simply put it in stack
+							a;					
+							
+				} ];
 				
 				for (i in args)					
 					result[ result.length ] = callArgs[ args[i] ];

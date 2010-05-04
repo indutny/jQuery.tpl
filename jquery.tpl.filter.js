@@ -35,15 +35,15 @@
 	$.extend($.template.modificators,{
 		"filter": function ( filter , namespace) {
 		
-			!namespace.filter
+			!namespace.$filter
 				&&
-					(namespace.filter = filter_func);
+					(namespace.$filter = filter_func);
 		
 			filter = $.trim(filter) || "escape";
-			return "$p($scope.filter('" + filter + "',function($_){";
+			return "$p($scope.$filter('" + filter + "',function($_){";
 		},
 		"/filter" : function ( namespace) {
-			return ";return $_}),$_,$r);";
+			return ";return $_}),$_);";
 		}
 	});
 	

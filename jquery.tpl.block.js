@@ -16,8 +16,6 @@
 	/** @const */
 	var flag = "f";
 	/** @const */
-	var cached_$r = "r";
-	/** @const */
 	var cached_$p = "p";
 	
 	
@@ -28,7 +26,7 @@
 	* @param{string} name name of template to extend
 	* @param{object} argums argument that will be passed to template with block values
 	*/
-	function $extends($_ , $r, $p, gid , name , argums) {
+	function $extends($_ , $p, gid , name , argums) {
 	
 		// Store template into internal storage
 		data[gid][ext] = $.template(name);
@@ -54,7 +52,7 @@
 						[ext](
 							argums
 						)
-			, $_, $r);
+			, $_);
 			
 			
 			// Clear storage on this gid
@@ -74,7 +72,7 @@
 	* @param{int} flag Is that first call of this function
 	* @param{arary} $_ Output stack of template
 	*/
-	function $block(name, gid, code, flag, $args, $_, $r, $p, cache) {
+	function $block(name, gid, code, flag, $args, $_, $p, cache) {
 		// Get data storage for gid
 		cache=data[gid];
 		
@@ -152,7 +150,7 @@
 	$.extend($.template.modificators,{
 		"extends" : function (str , namespace) {
 			
-			return "$scope.$extends($_,$r,$p," + align(namespace) +	"," + str + ");";			
+			return "$scope.$extends($_,$p," + align(namespace) +	"," + str + ");";			
 			
 		},
 		"block" : function (name , namespace) {
@@ -166,7 +164,7 @@
 			store = data[ gid = align(namespace) ][ flag ];					
 			data[ gid ][ flag ] = 1;
 			
-			return ";return $_.join('')},"+store + (store ? ")" : ",$args)") + ",$_,$r);";
+			return ";return $_.join('')},"+store + (store ? ")" : ",$args)") + ",$_);";
 			
 		}
 	});
