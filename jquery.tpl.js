@@ -3,6 +3,8 @@
 * All variables that you want to use in template must be defined in second argument of $.template or in className of element(if using $.render)
 * If you pass variable, that's not defined before - it will be available only as $args.varName
 * This is because of speed of execution of "with" method (no compiler optimizations)
+* Now to use $p you must pass two arguments str and $_.
+* Last one is input stack, normally you must pust $_
 */
 (function($ , undefined) {
 
