@@ -1,0 +1,1 @@
+java -jar closure.jar --compilation_level SIMPLE_OPTIMIZATIONS --js jquery.tpl.filter.js --js_output_file jquery.tpl.filter.min.js
