@@ -1,28 +1,34 @@
 (function () {
 	var accum="";
 	
-	for (var i = 1E4;i>0;i--)
-		accum += " similar {%= ' %1 ' %} are fun ";
+	for (var i = 1000;i>0;i--)
+		accum += " similar {%= %1 %} are fun ";
 	
-	function test() {
-		$.template( accum.replace(/%1/g , Math.random())   , {} , "tempname");
+	function test(str) {
+		$.template( str );
 	}
 	
-	function benchmark(iterations) {
-		var i = iterations, time, overall=0;
+	function benchmark(tests) {
+		var i = tests.length-1, time, overall=0;
 		
-		for (;i>0;i--) {
+		for (;i>=0;i--) {
 			time = +new Date;
 			
-			test();
+			test(tests[i]);
 			
 			time = +new Date - time;
 			
 			overall+=time;
 		}
 		
-		$("<div>" + (overall /  iterations ) + " ms</div>").appendTo('body');
+		$("<div>" + (overall /  tests.length ) + " ms</div>").appendTo('body');
 	}
+	var tests = [];
+	for (var i =0;i<150;i++)
+		tests[i] = accum.replace(/%1/g , i) ;
 	
-	benchmark(1E4);
+	$("<div>Tests created</div>").appendTo('body');
+	setTimeout(function() {
+		benchmark(tests);
+	},13);
 })();

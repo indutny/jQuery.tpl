@@ -4,6 +4,8 @@
 * All variables that you want to use in template must be defined in second argument of $.template or in className of element(if using $.render)
 * If you pass variable, that's not defined before - it will be available only as $args.varName
 * This is because of speed of execution of "with" method (no compiler optimizations)
+* Now to use $p you must pass two arguments str and $_.
+* Last one is input stack, normally you must pust $_
 */
 (function($ , undefined) {
 
@@ -258,7 +260,8 @@
 	
 			// Create function with overdriven args
 			// In secure closure
-			i = $eval("[function($scope,$args,$p,$r," + args.join(",") + "){$_=[];" + compiled + ";return $_.join('');}]");						
+			// Fixed: IE was throwing error I is undefined, so returned to array evaluation
+			i = $eval("[function($scope,$args,$p," + args.join(",") + "){$_=[];" + compiled + ";return $_.join('')}]");
 			
 			/**
 			* Cache wrapper by str key
@@ -297,8 +300,29 @@
 			* @return {array}
 			*/
 			function createArguments(callArgs,result,i) {
-			
-				result = [ namespace, callArgs , $push , namespace.$r ];
+				
+				// Store local copy of $r (replacement array)
+				var $r = namespace.$r;
+				
+				/** There're some predefined arguments such as:
+				* $scope = namespace,
+				* $args = callArgs,
+				* $p = function
+				*
+				* $p is pushing function, declared here to have access to $r variable
+				*/
+				result = [ namespace, callArgs , function (a,$_) {
+					
+					// Push string or object into global output stack
+					return $_[$_.length] =
+						(a instanceof $) ?
+							// If a is obj then push it's "ghost"
+							// After, we will replace it with jQuery obj
+							$insert_jQuery(a, $r) :
+							// If string - simply put it in stack
+							a;					
+							
+				} ];
 				
 				for (i in args)					
 					result[ result.length ] = callArgs[ args[i] ];
@@ -315,12 +339,11 @@
 			*/
 			local.html = function (callArgs) {
 				// Args can be null
-				callArgs = callArgs || {},
-				
-				// Append namespace to args
-				$.extend(true, callArgs, namespace);
-				
-				// Attach permament scope to namespace	
+				callArgs = callArgs || {};				
+
+				// Extend callArgs with namespace
+				for ( name in namespace )
+					callArgs[name] = namespace[name];
 				
 				// Return result of execution				
 				return i.apply(undefined , createArguments( callArgs ));
