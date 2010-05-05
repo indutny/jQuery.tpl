@@ -13,7 +13,7 @@
 	 * @return {Function}
 	 */
 	function $eval(a) {
-		return eval(a);
+		return eval(a)[0];
 	}
  
 	 (function ($tab , gid ,
@@ -240,7 +240,8 @@
 	
 			// Create function with overdriven args
 			// In secure closure
-			i = $eval("(function($scope,$args,$p," + args.join(",") + "){$_=[];" + compiled + ";return $_.join('')})");						
+			// Fixed: IE was throwing error I is undefined, so returned to array evaluation
+			i = $eval("[function($scope,$args,$p," + args.join(",") + "){$_=[];" + compiled + ";return $_.join('')}]");
 			
 			/**
 			* Cache wrapper by str key
