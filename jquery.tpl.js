@@ -26,7 +26,7 @@
 				* Map elements of array using call function
 				* Supports Array.map function
 				* @param{array} arr Source array
-				* @param{function} call Process function
+				* @param{Function} call Process function
 				* @return{array}
 				*/
 				function map(arr, call) {
