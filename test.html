@@ -73,7 +73,7 @@
 			
 			_start();
 			
-			var got = $.template("Only string",{}).html(),
+			var got = $.template("Only string").html(),
 				expected = "Only string";
 			
 			global+=_end();
@@ -94,8 +94,8 @@
 			
 			_start();
 			
-			$.template("wrong",{},"a");
-			$.template("right",{},"a");
+			$.template("wrong",[],"a");
+			$.template("right",[],"a");
 			
 			var got = $.template("a").html(),
 				expected = "right";
@@ -118,7 +118,7 @@
 			
 			_start();
 			
-			var got = $.template("{%= 'Only eval' %}",{}).html(),
+			var got = $.template("{%= 'Only eval' %}").html(),
 				expected = "Only eval"; 
 			
 			global+=_end();
@@ -184,7 +184,7 @@
 			
 			_start();
 			
-			var got = $.template("Work{%= ' is ' %}hard",{}).html(),
+			var got = $.template("Work{%= ' is ' %}hard").html(),
 				expected = "Work is hard";
 			
 			global+=_end();
@@ -226,7 +226,7 @@
 			
 			_start();
 			
-			var got = $.template("{%if true%}I am ok{%/if%}",{}).html(),
+			var got = $.template("{%if true%}I am ok{%/if%}").html(),
 					expected = "I am ok";
 			
 			global+=_end();
@@ -247,7 +247,7 @@
 			
 			_start();
 			
-			var got = $.template("{%if false%}I am not ok{%else%}I am ok{%/if%}",{}).html(),
+			var got = $.template("{%if false%}I am not ok{%else%}I am ok{%/if%}").html(),
 					expected = "I am ok";
 			
 			global+=_end();
@@ -268,7 +268,7 @@
 			
 			_start();
 			
-			var got = $.template("{%if false%}I am not ok{%elseif true%}I am ok{%/if%}",{}).html(),
+			var got = $.template("{%if false%}I am not ok{%elseif true%}I am ok{%/if%}").html(),
 					expected = "I am ok";
 			
 			global+=_end();
@@ -289,7 +289,7 @@
 			
 			_start();
 			
-			var got = $.template("{%@ test(a) {return a+' ok'} %}{%= test(\"I am\") %}",{}).html(),
+			var got = $.template("{%@ test(a) {return a+' ok'} %}{%= test(\"I am\") %}").html(),
 					expected = "I am ok";
 			
 			global+=_end();
@@ -310,7 +310,7 @@
 			
 			_start();
 			
-			var got = $.template("{% var a = 'not in scope'; %}{%~ var a = 'in scope';%}{%= a %}",{}).html(),
+			var got = $.template("{% var a = 'not in scope'; %}{%~ var a = 'in scope';%}{%= a %}").html(),
 					expected = "not in scope";
 			
 			global+=_end();
@@ -350,7 +350,7 @@
 			
 			_start();
 			
-			var got = $.template("{%catch var a%}I am a{%/catch%}{%= a +' char' %}",{}).html(),
+			var got = $.template("{%catch var a%}I am a{%/catch%}{%= a +' char' %}").html(),
 				  expected =  "I am a char";
 			
 			global+=_end();
@@ -369,7 +369,7 @@
 			try {
 			console.info("Naming templates");
 			
-			$.template("test",{},"test");
+			$.template("test",[],"test");
 			
 			_start();
 			
@@ -392,11 +392,11 @@
 			try {
 			console.info("Naming templates with short hand");
 			
-			$.template("<div>test</div>",{},"test");
+			$.template("<div>test</div>",[],"test");
 			
 			_start();
 			
-			var got = $.template("<div>{%: test {} %}is hard</div>",{})().html().toLowerCase(),
+			var got = $.template("<div>{%: test [] %}is hard</div>")().html().toLowerCase(),
 			expected = "<div>test</div>is hard";
 			
 			global+=_end();
@@ -417,10 +417,10 @@
 			
 			_start();
 			
-			$.template("<div>test</div>",{},"test");
-			$.template("<div>{%: test {} %}is hard</div>",{},"kaza");
+			$.template("<div>test</div>",[],"test");
+			$.template("<div>{%: test [] %}is hard</div>",[],"kaza");
 			
-			var got = $.template("<div>{%: kaza {} %}so do it</div>",{})().text().toLowerCase(),
+			var got = $.template("<div>{%: kaza [] %}so do it</div>")().text().toLowerCase(),
 				   expected ="testis hardso do it";
 				   
 			global+=_end();
@@ -449,7 +449,7 @@
 					e+=inc_e;
 				}
 				
-				if ($.template(g,{}).html() !== e)
+				if ($.template(g).html() !== e)
 					return;
 				
 				
@@ -457,7 +457,7 @@
 				_start();
 				
 				while (i>0) {
-					$.template(g,{}).html();
+					$.template(g).html();
 					i--;
 				}
 				
@@ -484,7 +484,7 @@
 				_start();
 				
 				while (i>0) {
-					if (( got = $.template(g+=inc_g,{}).html()) !== (e+=inc_e))
+					if (( got = $.template(g+=inc_g).html()) !== (e+=inc_e))
 						return;
 					i--;
 				}
@@ -504,7 +504,7 @@
 				console.info("Simple");
 				_start();
 				
-				var got = $.template("1{%block 'a'%}2{%/block%}3",{}).html(),
+				var got = $.template("1{%block 'a'%}2{%/block%}3").html(),
 					expected = "123";
 				
 				global+=_end();
@@ -524,9 +524,9 @@
 				console.info("Attachment testing");
 				_start();
 				
-				$.template("<div>1{%block 'a'%}2<{%/block%}3</div>",{},"a");
+				$.template("<div>1{%block 'a'%}2<{%/block%}3</div>",[],"a");
 				
-				var got = $.template("{%extends 'a'%}{%block 'a'%}A{%/block%}",{})().html(),
+				var got = $.template("{%extends 'a'%}{%block 'a'%}A{%/block%}")().html(),
 					expected = "1A3";
 				
 				global+=_end();
@@ -546,9 +546,9 @@
 				console.info("Attachment with junk");
 				_start();
 				
-				$.template("<div>1{%block 'a'%}2<{%/block%}3</div>",{},"a");
+				$.template("<div>1{%block 'a'%}2<{%/block%}3</div>",[],"a");
 				
-				var got = $.template("{%extends 'a'%}asdfgas{%block 'a'%}A{%/block%}asdfasd",{})().html(),
+				var got = $.template("{%extends 'a'%}asdfgas{%block 'a'%}A{%/block%}asdfasd")().html(),
 					expected = "1A3";
 				
 				global+=_end();
@@ -570,7 +570,7 @@
 				
 				$.template("<div>1{%block 'a'%}2<{%/block%}3{%block 'b'%}4{%/block%}5{%block 'c'%}6{%/block%}7</div>",[],"a");
 				
-				var got = $.template("{%extends 'a'%}{%block 'a'%}A{%/block%}",{})().html(),
+				var got = $.template("{%extends 'a'%}{%block 'a'%}A{%/block%}")().html(),
 					expected = "1A34567";
 				
 				global+=_end();
@@ -590,9 +590,9 @@
 				console.info("Three different attached blocks");
 				_start();
 				
-				$.template("<div>1{%block 'a'%}2<{%/block%}3{%block 'b'%}4{%/block%}5{%block 'c'%}6{%/block%}7</div>",{},"a");
+				$.template("<div>1{%block 'a'%}2<{%/block%}3{%block 'b'%}4{%/block%}5{%block 'c'%}6{%/block%}7</div>",[],"a");
 				
-				var got = $.template("{%extends 'a'%}{%block 'a'%}A{%/block%}{%block 'b'%}B{%/block%}{%block 'c'%}C{%/block%}",{})().html(),
+				var got = $.template("{%extends 'a'%}{%block 'a'%}A{%/block%}{%block 'b'%}B{%/block%}{%block 'c'%}C{%/block%}")().html(),
 					expected = "1A3B5C7";
 				
 				global+=_end();
@@ -612,9 +612,9 @@
 				console.info("Three different attached blocks with junk");
 				_start();
 				
-				$.template("<div>1{%block 'a'%}2{%/block%}3{%block 'b'%}4{%/block%}5{%block 'c'%}6{%/block%}7</div>",{},"a");
+				$.template("<div>1{%block 'a'%}2{%/block%}3{%block 'b'%}4{%/block%}5{%block 'c'%}6{%/block%}7</div>",[],"a");
 				
-				var got = $.template("{%extends 'a'%}asdfgasd{%block 'a'%}A{%/block%}asdgs{%block 'b'%}B{%/block%}asgsdgsd{%block 'c'%}C{%/block%}asgasg",{})().html(),
+				var got = $.template("{%extends 'a'%}asdfgasd{%block 'a'%}A{%/block%}asdgs{%block 'b'%}B{%/block%}asgsdgsd{%block 'c'%}C{%/block%}asgasg")().html(),
 					expected = "1A3B5C7";
 				
 				global+=_end();
@@ -634,9 +634,9 @@
 				console.info("Three repeated blocks");
 				_start();
 				
-				$.template("<div>1{%block 'a'%}2{%/block%}3{%block 'a'%}4{%/block%}5{%block 'a'%}6{%/block%}7</div>",{},"a");
+				$.template("<div>1{%block 'a'%}2{%/block%}3{%block 'a'%}4{%/block%}5{%block 'a'%}6{%/block%}7</div>",[],"a");
 				
-				var got = $.template("{%extends 'a'%}",{})().html(),
+				var got = $.template("{%extends 'a'%}")().html(),
 					expected = "1234567";
 				
 				global+=_end();
@@ -656,9 +656,9 @@
 				console.info("Three repeated blocks with one attachment");
 				_start();
 				
-				$.template("<div>1{%block 'a'%}2{%/block%}3{%block 'a'%}4{%/block%}5{%block 'a'%}6{%/block%}7</div>",{},"a");
+				$.template("<div>1{%block 'a'%}2{%/block%}3{%block 'a'%}4{%/block%}5{%block 'a'%}6{%/block%}7</div>",[],"a");
 				
-				var got = $.template("{%extends 'a'%}{%block 'a'%}_{%/block%}",{})().html(),
+				var got = $.template("{%extends 'a'%}{%block 'a'%}_{%/block%}")().html(),
 					expected = "1_3_5_7";
 				
 				global+=_end();
@@ -678,9 +678,9 @@
 				console.info("Three repeated blocks with two attachments");
 				_start();
 				
-				$.template("<div>1{%block 'a'%}2{%/block%}3{%block 'a'%}4{%/block%}5{%block 'a'%}6{%/block%}7</div>",{},"a");
+				$.template("<div>1{%block 'a'%}2{%/block%}3{%block 'a'%}4{%/block%}5{%block 'a'%}6{%/block%}7</div>",[],"a");
 				
-				var got = $.template("{%extends 'a'%}{%block 'a'%}_{%/block%}{%block 'a'%}-{%/block%}",{})().html(),
+				var got = $.template("{%extends 'a'%}{%block 'a'%}_{%/block%}{%block 'a'%}-{%/block%}")().html(),
 					expected = "1_3-5-7";
 				
 				global+=_end();
@@ -700,9 +700,9 @@
 				console.info("Three repeated blocks with three attachments");
 				_start();
 				
-				$.template("<div>1{%block 'a'%}2{%/block%}3{%block 'a'%}4{%/block%}5{%block 'a'%}6{%/block%}7</div>",{},"a");
+				$.template("<div>1{%block 'a'%}2{%/block%}3{%block 'a'%}4{%/block%}5{%block 'a'%}6{%/block%}7</div>",[],"a");
 				
-				var got = $.template("{%extends 'a'%}{%block 'a'%}_{%/block%}{%block 'a'%}-{%/block%}{%block 'a'%}${%/block%}",{})().html(),
+				var got = $.template("{%extends 'a'%}{%block 'a'%}_{%/block%}{%block 'a'%}-{%/block%}{%block 'a'%}${%/block%}")().html(),
 					expected = "1_3-5$7";
 				
 				global+=_end();
@@ -724,7 +724,7 @@
 				
 				$.template("<div>{%= x%}{%block 'a'%}2{%/block%}3{%block 'a'%}4{%/block%}5{%block 'a'%}6{%/block%}{%= x%}</div>",["x"],"a");
 				
-				var got = $.template("{%extends 'a',{x : '#'}%}{%block 'a'%}_{%/block%}{%block 'a'%}-{%/block%}",{})().html(),
+				var got = $.template("{%extends 'a',{x : '#'}%}{%block 'a'%}_{%/block%}{%block 'a'%}-{%/block%}")().html(),
 					expected = "#_3-5-#";
 				
 				global+=_end();
@@ -753,7 +753,7 @@
 						e+=inc_e;
 					}
 					
-					if ($.template(g,{}).html() !== e)
+					if ($.template(g).html() !== e)
 						return;
 					
 					
@@ -761,7 +761,7 @@
 					_start();
 					
 					while (i>0) {
-						$.template(g,{}).html();
+						$.template(g).html();
 						i--;
 					}
 					
@@ -788,7 +788,7 @@
 					_start();
 					
 					while (i>0) {
-						if (( got = $.template(g+=inc_g,{}).html()) !== (e+=inc_e))
+						if (( got = $.template(g+=inc_g).html()) !== (e+=inc_e))
 							return;
 						i--;
 					}
@@ -817,9 +817,9 @@
 					}
 					g1+="</div>";
 					
-					$.template(g1, {}, "a");
+					$.template(g1, [], "a");
 					
-					if (( g1 = $.template(g2,{})().html()) !== e)
+					if (( g1 = $.template(g2)().html()) !== e)
 						return console.log(g1);
 					
 					
@@ -827,7 +827,7 @@
 					_start();
 					
 					while (i>0) {
-						$.template(g2,{}).html();
+						$.template(g2).html();
 						i--;
 					}
 					
@@ -847,7 +847,7 @@
 				console.info("Simple");
 				_start();
 				
-				var got = $.template("0{%filter nop%}123{%/filter%}4",{}).html(),
+				var got = $.template("0{%filter nop%}123{%/filter%}4").html(),
 					expected = "01234";
 				
 				global+=_end();
@@ -867,7 +867,7 @@
 				console.info("Escape");
 				_start();
 				
-				var got = $.template("0{%filter escape%}:{%/filter%}1",{}).html(),
+				var got = $.template("0{%filter escape%}:{%/filter%}1").html(),
 					expected = "0%3A1";
 				
 				global+=_end();
@@ -887,7 +887,7 @@
 				console.info("Safe");
 				_start();
 				
-				var got = $.template("0{%filter safe%}<>&\"'{%/filter%}1",{}).html(),
+				var got = $.template("0{%filter safe%}<>&\"'{%/filter%}1").html(),
 					expected = "0&lt;&gt;&amp;&quot;&#039;1";
 				
 				global+=_end();
@@ -907,7 +907,7 @@
 				console.info("Upper");
 				_start();
 				
-				var got = $.template("0{%filter upper%}abc{%/filter%}1",{}).html(),
+				var got = $.template("0{%filter upper%}abc{%/filter%}1").html(),
 					expected = "0ABC1";
 				
 				global+=_end();
@@ -927,7 +927,7 @@
 				console.info("Lower");
 				_start();
 				
-				var got = $.template("0{%filter lower%}ABC{%/filter%}1",{}).html(),
+				var got = $.template("0{%filter lower%}ABC{%/filter%}1").html(),
 					expected = "0abc1";
 				
 				global+=_end();
@@ -947,7 +947,7 @@
 				console.info("Hierarchical");
 				_start();
 				
-				var got = $.template("0{%filter escape%}{%filter safe%}<>{%/filter%}{%/filter%}1",{}).html(),
+				var got = $.template("0{%filter escape%}{%filter safe%}<>{%/filter%}{%/filter%}1").html(),
 					expected = "0%26lt%3B%26gt%3B1";
 				
 				global+=_end();
