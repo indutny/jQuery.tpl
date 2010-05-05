@@ -10,6 +10,8 @@
 
 	/** Escaping closure
 	 * Only global variables will be available here
+	 * @param{string} a Code to evaluate
+	 * @param{string} b Variable to store output
 	 * @return {Function}
 	 */
 	function $eval(a,b) {
@@ -20,6 +22,13 @@
 	                cache , namecache , $brackets , $modificator ,
 					$tabs , $spaces , $decorator , modificators) {				
 					
+				/**
+				* Map elements of array using call function
+				* Supports Array.map function
+				* @param{array} arr Source array
+				* @param{function} call Process function
+				* @return{array}
+				*/
 				function map(arr, call) {
 					if (arr.map)
 						return arr.map(call);
