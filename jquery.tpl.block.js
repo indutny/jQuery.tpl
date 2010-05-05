@@ -1,4 +1,3 @@
-/**@preserve jQuery.tpl block plugin v.0.2;Copyright 2010, Fedor Indutny;Released under MIT license **/
 /**
 * @param{array} data internal storage with gid as key
 */
@@ -17,8 +16,6 @@
 	/** @const */
 	var flag = "f";
 	/** @const */
-	var cached_$r = "r";
-	/** @const */
 	var cached_$p = "p";
 	
 	
@@ -29,14 +26,13 @@
 	* @param{string} name name of template to extend
 	* @param{object} argums argument that will be passed to template with block values
 	*/
-	function $extends($_ , $r, $p, gid , name , argums , junk) {
+	function $extends($_ , $p, gid , name , argums) {
 	
 		// Store template into internal storage
 		data[gid][ext] = $.template(name);
 		
 		// Preprocess and prepare
-		argums = argums || {};
-		
+		argums = argums || {};		
 		
 		// Change standart join function in output stack array
 		// So when output will be created this function will be called
@@ -56,7 +52,7 @@
 						[ext](
 							argums
 						)
-			, $_, $r);
+			, $_);
 			
 			
 			// Clear storage on this gid
@@ -76,7 +72,7 @@
 	* @param{int} flag Is that first call of this function
 	* @param{arary} $_ Output stack of template
 	*/
-	function $block(name, gid, code, flag, $args, $_, $r, $p, cache) {
+	function $block(name, gid, code, flag, $args, $_, $p, cache) {
 		// Get data storage for gid
 		cache=data[gid];
 		
@@ -84,15 +80,9 @@
 		if (!flag) {			
 			// Cache arguments and stack into storage
 			cache[cached_args] = $args;
-			cache[cached_$_]= $_;
-			cache[cached_$r] = $r;
-			cache[cached_$p] = $p;
 		} else {
 			// If not - get from cache
 			$args = cache[cached_args];
-			$_ = cache[cached_$_];		
-			$r = cache[cached_$r];
-			$p = cache[cached_$p];
 		}
 		
 		// If we are just passing block values to template
@@ -106,8 +96,9 @@
 				(data[gid][args][name] = [ code([]) ]);
 			
 			// Stop
-			return;
+			return "";
 		}		
+		
 		// Wow, some template want to pass us some arguments
 		// Really?				
 		if ( (flag = $args[blockStack]) && flag[name] )		
@@ -115,10 +106,10 @@
 			(cache = (code = flag[name])[0]) && (code.length>1) && (flag[name] = code.slice(1));
 		else
 			// Simply get source
-			cache= code([]);
+			cache = code([]);
 			
 		// And send it all to the output stack
-		$p(cache , $_,$r);	
+		return cache;
 	}
 	
 	/**
@@ -159,12 +150,12 @@
 	$.extend($.template.modificators,{
 		"extends" : function (str , namespace) {
 			
-			return "$scope.$extends($_,$r,$p," + align(namespace) +	"," + str + ");";			
+			return "$scope.$extends($_,$p," + align(namespace) +	"," + str + ");";			
 			
 		},
 		"block" : function (name , namespace) {
 			
-			return "$scope.$block(" + name + "," + align(namespace) + ",function($_){";
+			return "$p($scope.$block(" + name + "," + align(namespace) + ",function($_){";
 			
 		},
 		"/block" : function (junk, namespace, gid, store) {						
@@ -173,10 +164,10 @@
 			store = data[ gid = align(namespace) ][ flag ];					
 			data[ gid ][ flag ] = 1;
 			
-			return ";return $_.join('')},"+store + (store ? ");" : ",$args,$_,$r,$p);");
+			return ";return $_.join('')},"+store + (store ? ")" : ",$args)") + ",$_);";
 			
 		}
 	});
 	
 	// Pass some constants
-})(jQuery,{},"$blockStack");
+})(jQuery,{},"$blockStack");/**@preserve jQuery.tpl block plugin v.0.2;Copyright 2010, Fedor Indutny;Released under MIT license **/
