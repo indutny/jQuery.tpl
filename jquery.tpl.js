@@ -12,8 +12,8 @@
 	 * Only global variables will be available here
 	 * @return {Function}
 	 */
-	function $eval(a) {
-		return eval(a)[0];
+	function $eval(a,b) {
+		return eval(a);
 	}
  
 	 (function ($tab , gid ,
@@ -239,9 +239,8 @@
 			
 	
 			// Create function with overdriven args
-			// In secure closure
-			// Fixed: IE was throwing error I is undefined, so returned to array evaluation
-			i = $eval("[function($scope,$args,$p," + args.join(",") + "){$_=[];" + compiled + ";return $_.join('')}]");
+			// In secure closure	
+			i=$eval("b=function($scope,$args,$p," + args.join(",") + "){$_=[];" + compiled + ";return $_.join('')}");
 			
 			/**
 			* Cache wrapper by str key
