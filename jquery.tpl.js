@@ -10,16 +10,25 @@
 
 	/** Escaping closure
 	 * Only global variables will be available here
+	 * @param{string} a Code to evaluate
+	 * @param{string} b Variable to store output
 	 * @return {Function}
 	 */
-	function $eval(a) {
-		return eval(a)[0];
+	function $eval(a,b) {
+		return eval(a);
 	}
  
 	 (function ($tab , gid ,
 	                cache , namecache , $brackets , $modificator ,
 					$tabs , $spaces , $decorator , modificators) {				
 					
+				/**
+				* Map elements of array using call function
+				* Supports Array.map function
+				* @param{array} arr Source array
+				* @param{Function} call Process function
+				* @return{array}
+				*/
 				function map(arr, call) {
 					if (arr.map)
 						return arr.map(call);
@@ -239,9 +248,8 @@
 			
 	
 			// Create function with overdriven args
-			// In secure closure
-			// Fixed: IE was throwing error I is undefined, so returned to array evaluation
-			i = $eval("[function($scope,$args,$p," + args.join(",") + "){$_=[];" + compiled + ";return $_.join('')}]");
+			// In secure closure	
+			i=$eval("b=function($scope,$args,$p," + args.join(",") + "){$_=[];" + compiled + ";return $_.join('')}");
 			
 			/**
 			* Cache wrapper by str key
